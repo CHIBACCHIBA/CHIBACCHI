@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CHIBACCHI WORKS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Shippori+Mincho:wght@400;600;800&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0a0a;
+    --paper: #f4f1ea;
+    --paper-warm: #ebe6da;
+    --red: #c8362a;
+    --gray: #6b6660;
+    --line: #2a2a2a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Shippori Mincho", "Yu Mincho", serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* paper texture */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(0,0,0,0.015) 0%, transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(200,54,42,0.02) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+  }
+
+  main { position: relative; z-index: 3; }
+
+  /* ===== HERO ===== */
+  #hero {
+    padding: 0;
+    height: 100vh;
+    min-height: 400px;
+    overflow: hidden;
+  }
+
+  .hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1.6rem 2.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 100;
+    mix-blend-mode: difference;
+    color: var(--paper);
+  }
+
+  .logo {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+  }
+
+  nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2.4rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  nav a {
+    color: inherit;
+    text-decoration: none;
+    position: relative;
+    padding-bottom: 2px;
+  }
+
+  nav a::after {
+    content: "";
+    position: absolute;
+    left: 0; bottom: 0;
+    width: 0; height: 1px;
+    background: currentColor;
+    transition: width 0.4s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+
+  nav a:hover::after { width: 100%; }
+
+  /* ===== SECTION COMMON ===== */
+  section {
+    padding: 8rem 2.4rem;
+    position: relative;
+  }
+
+  .section-num {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--red);
+    letter-spacing: 0.1em;
+  }
+
+  .section-title {
+    font-family: "Cormorant Garamond", serif;
+    font-weight: 300;
+    font-size: clamp(3rem, 7vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .section-idx {
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 300;
+    font-size: 0.28em;
+    color: currentColor;
+    opacity: 0.45;
+    letter-spacing: 0.1em;
+    align-self: flex-start;
+    padding-top: 0.3em;
+  }
+
+  .section-title .jp {
+    font-family: "Shippori Mincho", serif;
+    font-weight: 400;
+    font-size: 0.4em;
+    color: var(--gray);
+    letter-spacing: 0.3em;
+  }
+
+  /* ===== TANKA ===== */
+  #tanka {
+    background: var(--paper-warm);
+    padding-top: 10rem;
+    padding-bottom: 6rem;
+  }
+
+  .tanka-stage {
+    position: relative;
+    /* 文字数はJSで計測して --tanka-chars に設定。フォールバック31 */
+    --tanka-fs: 1rem;
+    --tanka-lh: 1.6;
+    --tanka-chars: 31;
+    height: calc(var(--tanka-fs) * var(--tanka-lh) * var(--tanka-chars) + 4rem);
+    transition: height 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+
+  .tanka-viewport {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+    /* edge fade */
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
+  }
+
+  .tanka-track {
+    display: flex;
+    height: 100%;
+    width: max-content;
+    will-change: transform;
+  }
+
+  .tanka-item {
+    writing-mode: vertical-rl;
+    -webkit-writing-mode: vertical-rl;
+    font-family: "Shippori Mincho", serif;
+    font-weight: 400;
+    line-height: var(--tanka-lh);
+    letter-spacing: 0.25em;
+    font-size: var(--tanka-fs);
+    height: 100%;
+    padding: 2rem 2.5rem;
+    margin-right: 1rem;
+    position: relative;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(10,10,10,0.15);
+  }
+
+  .tanka-item:nth-child(11n+6) {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+  }
+
+  /* ===== controls ===== */
+  .tanka-controls {
+    margin-top: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .tanka-btn {
+    width: 52px;
+    height: 52px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.7, 0, 0.3, 1);
+    font-family: inherit;
+    font-size: 1.1rem;
+    user-select: none;
+  }
+
+  .tanka-btn:hover,
+  .tanka-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .tanka-btn:active { transform: scale(0.94); }
+
+  .tanka-speed {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    color: var(--gray);
+  }
+
+  .tanka-speed label {
+    letter-spacing: 0.3em;
+    font-size: 0.65rem;
+  }
+
+  .tanka-speed input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 140px;
+    height: 1px;
+    background: var(--ink);
+    outline: none;
+    cursor: pointer;
+  }
+  .tanka-speed input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--red);
+    border: 1px solid var(--ink);
+    cursor: pointer;
+    border-radius: 0;
+  }
+  .tanka-speed input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--red);
+    border: 1px solid var(--ink);
+    cursor: pointer;
+    border-radius: 0;
+  }
+
+  .tanka-speed .speed-val {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-size: 1rem;
+    color: var(--ink);
+    min-width: 2.5em;
+  }
+
+  /* ===== PHOTO ===== */
+  #photo {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  #photo .section-title { color: var(--paper); }
+  #photo .section-num { color: var(--red); }
+  #photo .section-title .jp { color: rgba(244,241,234,0.4); }
+
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    align-items: start;
+  }
+
+  .photo {
+    position: relative;
+    overflow: hidden;
+    background: transparent;
+    cursor: zoom-in;
+    transition: transform 0.6s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+
+  .photo:hover { transform: scale(0.98); }
+
+  .photo svg,
+  .photo img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* 001・002 を2行スパンして縦長に */
+  .photo-1, .photo-2 {
+    grid-row: span 2;
+    align-self: stretch;
+  }
+
+  .photo-1 img, .photo-2 img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* 010 を3列目に固定して2行スパン、011・012をその左に並べる */
+  .photo-10 {
+    grid-column: 3;
+    grid-row: span 2;
+    align-self: stretch;
+  }
+
+  .photo-10 img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .photo-caption {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .photo:hover .photo-caption { opacity: 1; }
+
+
+  /* ===== STAMP ===== */
+  #stamp {
+    background: var(--paper);
+  }
+
+  .stamp-wrap {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+  }
+
+  /* メインビジュアル: 実画像をフィーチャー */
+  .stamp-visual {
+    position: relative;
+    aspect-ratio: 1;
+    background: var(--paper-warm);
+    border: 1px solid var(--ink);
+    overflow: hidden;
+  }
+
+  .stamp-visual::before { content: none; }
+
+  .stamp-main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 2rem;
+    display: block;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(200,54,42,0.05) 0%, transparent 50%),
+      var(--paper);
+    transition: transform 0.6s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+
+  .stamp-visual:hover .stamp-main-img {
+    transform: scale(1.02);
+  }
+
+  /* サブプレビュー: 横並びの小さいタイル */
+  .stamp-thumbs {
+    margin-top: 3rem;
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 0.6rem;
+  }
+
+  .stamp-thumb {
+    aspect-ratio: 1;
+    background: var(--paper-warm);
+    border: 1px solid rgba(10,10,10,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .stamp-thumb:hover {
+    border-color: var(--ink);
+    transform: translateY(-2px);
+    cursor: default;
+  }
+
+  .stamp-thumb img,
+  .stamp-thumb svg {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .stamp-info {
+    padding-right: 2rem;
+  }
+
+  .stamp-info .meta-line {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gray);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .stamp-info .meta-line::before {
+    content: "";
+    width: 30px;
+    height: 1px;
+    background: var(--gray);
+  }
+
+  .stamp-info h3 {
+    font-family: "Shippori Mincho", serif;
+    font-weight: 800;
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    margin-bottom: 1.5rem;
+    line-height: 1.3;
+  }
+
+  .stamp-info h3 .accent {
+    color: var(--red);
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  .stamp-info .price {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-size: 2.8rem;
+    color: var(--red);
+    margin-bottom: 2rem;
+  }
+
+  .stamp-info p {
+    font-size: 0.95rem;
+    line-height: 2;
+    color: var(--gray);
+    margin-bottom: 3rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 2rem;
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink);
+    transition: all 0.4s cubic-bezier(0.7, 0, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    transform: translateX(-101%);
+    transition: transform 0.4s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+
+  .btn:hover { color: var(--ink); }
+  .btn:hover::before { transform: translateX(0); }
+  .btn span { position: relative; z-index: 2; }
+  .btn .arrow {
+    position: relative; z-index: 2;
+    transition: transform 0.4s;
+  }
+  .btn:hover .arrow { transform: translateX(4px); }
+
+  /* ===== ABOUT ===== */
+  #about {
+    background: var(--paper-warm);
+    padding-bottom: 4rem;
+  }
+
+  .about-wrap {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+    gap: 6rem;
+    align-items: start;
+  }
+
+  .about-img {
+    aspect-ratio: 3/4;
+    background: var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .about-img svg { width: 100%; height: 100%; }
+
+  .about-img::after {
+    content: "PORTRAIT / 2025";
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--paper);
+  }
+
+  .about-text h3 {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.2;
+    margin-bottom: 2rem;
+  }
+
+  .about-text h3 .red { color: var(--red); }
+
+  .about-text p {
+    font-size: 1rem;
+    line-height: 2.2;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+
+  .about-meta {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--ink);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+  }
+
+  .about-meta dt {
+    color: var(--gray);
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    margin-bottom: 0.4rem;
+  }
+
+  .about-meta dd { font-size: 0.85rem; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 6rem 2.4rem 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .footer-mark {
+    position: absolute;
+    bottom: -3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(8rem, 22vw, 22rem);
+    line-height: 0.8;
+    color: var(--paper);
+    opacity: 0.06;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+    margin-bottom: 4rem;
+    position: relative;
+    z-index: 2;
+  }
+
+  .footer-grid h4 {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    color: rgba(244,241,234,0.5);
+  }
+
+  .footer-grid .big {
+    font-family: "Cormorant Garamond", serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 2.4rem;
+    line-height: 1.3;
+  }
+
+  .footer-grid a {
+    color: var(--paper);
+    text-decoration: none;
+    display: block;
+    padding: 0.4rem 0;
+    font-size: 0.95rem;
+    transition: color 0.3s;
+  }
+
+  .footer-grid a:hover { color: var(--red); }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(244,241,234,0.15);
+    padding-top: 2rem;
+    display: flex;
+    justify-content: space-between;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(244,241,234,0.5);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ===== LIGHTBOX ===== */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,10,10,0.94);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .lightbox.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .lightbox-img {
+    max-width: 92vw;
+    max-height: 92vh;
+    object-fit: contain;
+    display: block;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: transparent;
+    border: 1px solid rgba(244,241,234,0.4);
+    color: var(--paper);
+    font-size: 1.5rem;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.3s;
+    line-height: 1;
+    font-family: sans-serif;
+  }
+  .lightbox-close:hover { border-color: var(--paper); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    header { padding: 1rem 1.4rem; }
+    nav ul { gap: 1.2rem; font-size: 0.6rem; }
+    section { padding: 5rem 1.4rem; }
+
+    .tanka-stage {
+      --tanka-lh: 1.6;
+    }
+    .tanka-item {
+      padding: 1.5rem 1.5rem;
+    }
+    .tanka-speed input[type="range"] { width: 100px; }
+
+    .photo-grid { grid-template-columns: repeat(2, 1fr); }
+    .photo-1, .photo-2, .photo-10 { grid-column: auto; grid-row: span 1; align-self: start; }
+    .photo-1 img, .photo-2 img, .photo-10 img { height: auto; object-fit: contain; }
+
+    .stamp-wrap, .about-wrap {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .stamp-thumbs { grid-template-columns: repeat(5, 1fr); gap: 0.4rem; margin-top: 2rem; }
+    .stamp-info { padding-right: 0; }
+
+    .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    .footer-bottom { flex-direction: column; gap: 1rem; }
+  }
+
+  /* ===== ANIMATIONS ===== */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s cubic-bezier(0.7, 0, 0.3, 1), transform 1s cubic-bezier(0.7, 0, 0.3, 1);
+  }
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <ul>
+      <li><a href="#tanka">01 / Tanka</a></li>
+      <li><a href="#photo">02 / Photo</a></li>
+      <li><a href="#stamp">03 / Stamp</a></li>
+      <li><a href="#about">04 / About</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section id="hero">
+    <img src="images/TOP.jpg" alt="" class="hero-img">
+  </section>
+
+  <!-- TANKA -->
+  <section id="tanka">
+    <h2 class="section-title reveal">
+      <span class="section-idx">01</span>Tanka <span class="jp">短歌</span>
+    </h2>
+
+    <div class="tanka-stage reveal">
+      <div class="tanka-viewport" id="tankaViewport">
+        <div class="tanka-track" id="tankaTrack">
+          <!-- set 1 -->
+          <div class="tanka-item">脱脂綿噛み締めながら運転をしながら嘔吐反射しながら</div>
+          <div class="tanka-item">歯を一本ひっこぬいたらちょっとだけイオンの空気がおいしくなった</div>
+          <div class="tanka-item">汗ながし蟻の巣をみる吾子のため日陰をつくる背なで日をうけ</div>
+          <div class="tanka-item">西の日は吾子の産毛を金色にてらしてしずむ天のろうそく</div>
+          <div class="tanka-item">「オレきみのサンドバッグじゃねーから！」と思わず口に出しかける朝</div>
+          <div class="tanka-item">どこでもいいどこかへ行こうと子を抱え朝戸を出れば白百合の咲く</div>
+          <div class="tanka-item">五線譜のようなオムツの跡がつく子の桃尻にかけ湯をながす</div>
+          <div class="tanka-item">うがいするたびに目につく蜘蛛の巣に埃と怠惰が絡まっている</div>
+          <div class="tanka-item">雨あがりバケツのなかの太陽をちからまかせにぶち撒けてやる</div>
+          <div class="tanka-item">バケツから放りだされた雨水のひとつひとつがひかる夏の日</div>
+          <div class="tanka-item">そよ風のホタルブクロのように子がひそむカーテンさやりとゆれる</div>
+          <div class="tanka-item">シャッターをきりつつ妻は「この風も保存したい」と逆光のなか</div>
+          <div class="tanka-item">頑なに「ごめん」と言わぬ妻といて口論すれば涙流れる</div>
+          <div class="tanka-item">「尊大な妻なんです」とAIに相談をするぬるい湯船で</div>
+          <div class="tanka-item">口論のあとの茶の間にエアコンとこおろぎだけが響きつづける</div>
+          <div class="tanka-item">部下からの謝罪メールに泣くイヌの絵文字があってもうすぐ定時</div>
+          <div class="tanka-item">秋分の日のブランコに吹く風のまにまにふたりからだを揺らす</div>
+          <div class="tanka-item">「なかよしじゃないからいや」と拒まれてどう動くのか吾子の言語野</div>
+          <div class="tanka-item">今日だけはこおろぎの音も聞こえないゲリラ豪雨の十月の夜</div>
+          <div class="tanka-item">ベランダでお月見をする秋の夜がきみの最初の記憶になれば</div>
+          <div class="tanka-item">泣き声で起きる朝四時　諦念のようなサイレン遠くで響く</div>
+          <div class="tanka-item">ゴミ捨て場にベビーベッドの段ボールちかくに増えたいのちを祝う</div>
+          <div class="tanka-item">枯れ葉、枝、マンホール蓋　子と歩く道で全ては楽器にかわる</div>
+          <div class="tanka-item">手のひらについた吾子の血(赤い血が流れている)としみじみ思う</div>
+          <div class="tanka-item">うしろからそっと抱き寄せほっぺたの皮脂をすり込む深くしずかに</div>
+          <div class="tanka-item">淡雪に月光のさす真夜中にほのと白めく乳飲み子の舌</div>
+          <div class="tanka-item">雨と虹、歌集としおり、月とネコ、こたつとみかん、あなたとわたし</div>
+          <div class="tanka-item">透き通る冬の朝日がうつしだす窓にひしめく子どもの手形</div>
+          <div class="tanka-item">会いたくてあの子を誘った夏フェスのタオルで吾子のおもらしを拭く</div>
+          <div class="tanka-item">いにしえの海に沈んだ大陸をえがいたような子の蒙古斑</div>
+          <div class="tanka-item">みどり児とひたいとひたいをくっつけて脳へまっすぐ送るまごころ</div>
+          <div class="tanka-item">社会から飼われる犬の首輪だとネクタイを巻く朝のルーティーン</div>
+          <div class="tanka-item">自動ドア開きはじめに右肩をねじこみ朝のデスクへはしる</div>
+          <div class="tanka-item">古ぼけたカメラがぼんやり写し出すあなたの寝顔、くせっ毛、えくぼ</div>
+          <div class="tanka-item">乳腺炎わずらう妻がしぼりだす母乳にまざる血液の赤</div>
+          <div class="tanka-item">今日もまた「愛している」では足りなくてひとり数える三十一音</div>
+          <div class="tanka-item">結露したガラスに指を濡らしつつ家族四人の名前を記す</div>
+          <div class="tanka-item">二歳児が拾い集めた庭先の松ぼっくりに雪ふりつもる</div>
+          <div class="tanka-item">今日もまた憤りつつ床に入る愛しているのに愛しているのに</div>
+          <div class="tanka-item">花びらが夜につぼみになるようにベッドでふたり絡む指さき</div>
+          <div class="tanka-item">玄関が閉まる最後の最後まで顔をみあわせ振りあう手と手</div>
+          <div class="tanka-item">妻と二歳長女にかしずく日々のなか０歳次女の無言を抱く</div>
+          <div class="tanka-item">「くまにきをつけるんだよ」と母親の真似する２歳の朝の見送り</div>
+          <div class="tanka-item">ローソンでから揚げを買うたまゆらにますます暗くなるゆうまぐれ</div>
+          <div class="tanka-item">手をほどき遊具へ走る吾子の影ずいぶん遠く遠くへ伸びる</div>
+          <div class="tanka-item">百円がなくて精米器を前になにもできずに仰ぐ名月</div>
+          <div class="tanka-item">二歳児がふたつの指でふるふると触れれば揺れる白百合の花</div>
+          <div class="tanka-item">手をつなぐ影伸びらかな坂道でスズムシを聞く晩夏の夕べ</div>
+          <div class="tanka-item">また増えたメガネのきずは二歳児とすごした夏の勲章として</div>
+          <div class="tanka-item">残されて冷えたシチューを食べながらしみじみ思う親になったと</div>
+          <div class="tanka-item">ママたちの輪に入れずに園庭にしゃがんで吾子とパンジーつつく</div>
+          <div class="tanka-item">幼な子は走って赤子はしゃっくりしうぐいすは鳴き夏至の風ふく</div>
+          <div class="tanka-item">梅雨空に中指たてているようなアスパラガスが庭先になる</div>
+          <div class="tanka-item">子が眠る夫婦の時間にお互いが撮った子どもの写真を見せ合う</div>
+          <div class="tanka-item">妻のいない我が家を「オレの城だぞ」と二歳児にむけうそぶいている</div>
+          <div class="tanka-item">無言にて差し伸べられた手をにぎり無言で起こす身重の妻を</div>
+          <div class="tanka-item">「おひさまがねんねしたね」と子にむけて妻が詩人になる夕まぐれ</div>
+          <div class="tanka-item">読む人に与える余白が少ないとわたしの短歌にＡＩは言う</div>
+          <div class="tanka-item">シーソーが上がるのを待つ子のためにゆっくりゆっくり体重乗せて</div>
+          <div class="tanka-item">朝焼けのひかり差し込む玄関を音立てぬよう出勤をする</div>
+          <div class="tanka-item">ほっぺたをくすぐるきみのゆびさきに目覚める朝の光は白く</div>
+          <div class="tanka-item">寝ることを泣いて嫌がる幼子の一日ひとひの重さを思う</div>
+          <div class="tanka-item">口もとをいちごで染める幼な子はもうすぐ姉になること知らず</div>
+          <div class="tanka-item">１センチ大きくなった靴を履き子は走りだす追い風のなか</div>
+          <div class="tanka-item">病休がふた月となるデスクにてしんねり笑う猫の置き物</div>
+          <div class="tanka-item">天窓にながれる雲を仰ぎ見る泣き止まぬ子を抱き続けて</div>
+          <div class="tanka-item">あたらしい万年筆で書き写す阿佐緒の歌はブルーブラック</div>
+          <div class="tanka-item">雪解けの水にかがやく青空を法定速度で飛び越えていく</div>
+          <div class="tanka-item">このあいだアンパンマンと話してた甥とＬＩＮＥで友だちになる</div>
+          <div class="tanka-item">牛乳を飲む子のためにストローをもつ指さきに伝う冷たさ</div>
+          <div class="tanka-item">自らの意見は通らぬ家を出て泉ケ岳を遠目に歩む</div>
+          <div class="tanka-item">公園にはじめて降り立つおさなごが残した12㎝の足あと</div>
+          <div class="tanka-item">眠らずに吾の帰りを待っているお風呂上がりの子のあたたかさ</div>
+          <div class="tanka-item">吾子が寝る家に帰って吾子が寝る家を出ていく暗い駐車場</div>
+          <div class="tanka-item">「おはよう」と「ざっす」と「うぃっす」を使い分け朝日さしこむオフィスを歩く</div>
+          <div class="tanka-item">iPhoneもとらえきれない青空の下でぼくらは草刈りをする</div>
+          <div class="tanka-item">ふるふるとつかまり立ちをする吾子の背中にいつか巣立つ日を見る</div>
+          <div class="tanka-item">川べりに捨てられているレジ袋シオカラトンボが翅を休める</div>
+          <div class="tanka-item">リビングの窓から手を振る吾子にむけ点滅させるブレーキランプ</div>
+          <div class="tanka-item">ひさびさの定時上がりに高ひかる西日へむけてかざす手のひら</div>
+          <div class="tanka-item">「おはよう」を交わす間合いをはかりつつゴミ袋持つ人が行き交う</div>
+          <div class="tanka-item">これだって君との日々の結晶と排水溝の汚れを流す</div>
+          <div class="tanka-item">雪煙過ぎてもろ目を見開けば君のまつ毛で光る氷片</div>
+          <div class="tanka-item">吾子を抱き吾子のフォト見て吾子の寝る顔見て吾子のフォトを撮る午後</div>
+          <div class="tanka-item">独り舞う虚しさを知り朽葉らが終の住処とする吹き溜まり</div>
+
+          <!-- set 2 (ループ用) -->
+          <div class="tanka-item" aria-hidden="true">脱脂綿噛み締めながら運転をしながら嘔吐反射しながら</div>
+          <div class="tanka-item" aria-hidden="true">歯を一本ひっこぬいたらちょっとだけイオンの空気がおいしくなった</div>
+          <div class="tanka-item" aria-hidden="true">汗ながし蟻の巣をみる吾子のため日陰をつくる背なで日をうけ</div>
+          <div class="tanka-item" aria-hidden="true">西の日は吾子の産毛を金色にてらしてしずむ天のろうそく</div>
+          <div class="tanka-item" aria-hidden="true">「オレきみのサンドバッグじゃねーから！」と思わず口に出しかける朝</div>
+          <div class="tanka-item" aria-hidden="true">どこでもいいどこかへ行こうと子を抱え朝戸を出れば白百合の咲く</div>
+          <div class="tanka-item" aria-hidden="true">五線譜のようなオムツの跡がつく子の桃尻にかけ湯をながす</div>
+          <div class="tanka-item" aria-hidden="true">うがいするたびに目につく蜘蛛の巣に埃と怠惰が絡まっている</div>
+          <div class="tanka-item" aria-hidden="true">雨あがりバケツのなかの太陽をちからまかせにぶち撒けてやる</div>
+          <div class="tanka-item" aria-hidden="true">バケツから放りだされた雨水のひとつひとつがひかる夏の日</div>
+          <div class="tanka-item" aria-hidden="true">そよ風のホタルブクロのように子がひそむカーテンさやりとゆれる</div>
+          <div class="tanka-item" aria-hidden="true">シャッターをきりつつ妻は「この風も保存したい」と逆光のなか</div>
+          <div class="tanka-item" aria-hidden="true">頑なに「ごめん」と言わぬ妻といて口論すれば涙流れる</div>
+          <div class="tanka-item" aria-hidden="true">「尊大な妻なんです」とAIに相談をするぬるい湯船で</div>
+          <div class="tanka-item" aria-hidden="true">口論のあとの茶の間にエアコンとこおろぎだけが響きつづける</div>
+          <div class="tanka-item" aria-hidden="true">部下からの謝罪メールに泣くイヌの絵文字があってもうすぐ定時</div>
+          <div class="tanka-item" aria-hidden="true">秋分の日のブランコに吹く風のまにまにふたりからだを揺らす</div>
+          <div class="tanka-item" aria-hidden="true">「なかよしじゃないからいや」と拒まれてどう動くのか吾子の言語野</div>
+          <div class="tanka-item" aria-hidden="true">今日だけはこおろぎの音も聞こえないゲリラ豪雨の十月の夜</div>
+          <div class="tanka-item" aria-hidden="true">ベランダでお月見をする秋の夜がきみの最初の記憶になれば</div>
+          <div class="tanka-item" aria-hidden="true">泣き声で起きる朝四時　諦念のようなサイレン遠くで響く</div>
+          <div class="tanka-item" aria-hidden="true">ゴミ捨て場にベビーベッドの段ボールちかくに増えたいのちを祝う</div>
+          <div class="tanka-item" aria-hidden="true">枯れ葉、枝、マンホール蓋　子と歩く道で全ては楽器にかわる</div>
+          <div class="tanka-item" aria-hidden="true">手のひらについた吾子の血(赤い血が流れている)としみじみ思う</div>
+          <div class="tanka-item" aria-hidden="true">うしろからそっと抱き寄せほっぺたの皮脂をすり込む深くしずかに</div>
+          <div class="tanka-item" aria-hidden="true">淡雪に月光のさす真夜中にほのと白めく乳飲み子の舌</div>
+          <div class="tanka-item" aria-hidden="true">雨と虹、歌集としおり、月とネコ、こたつとみかん、あなたとわたし</div>
+          <div class="tanka-item" aria-hidden="true">透き通る冬の朝日がうつしだす窓にひしめく子どもの手形</div>
+          <div class="tanka-item" aria-hidden="true">会いたくてあの子を誘った夏フェスのタオルで吾子のおもらしを拭く</div>
+          <div class="tanka-item" aria-hidden="true">いにしえの海に沈んだ大陸をえがいたような子の蒙古斑</div>
+          <div class="tanka-item" aria-hidden="true">みどり児とひたいとひたいをくっつけて脳へまっすぐ送るまごころ</div>
+          <div class="tanka-item" aria-hidden="true">社会から飼われる犬の首輪だとネクタイを巻く朝のルーティーン</div>
+          <div class="tanka-item" aria-hidden="true">自動ドア開きはじめに右肩をねじこみ朝のデスクへはしる</div>
+          <div class="tanka-item" aria-hidden="true">古ぼけたカメラがぼんやり写し出すあなたの寝顔、くせっ毛、えくぼ</div>
+          <div class="tanka-item" aria-hidden="true">乳腺炎わずらう妻がしぼりだす母乳にまざる血液の赤</div>
+          <div class="tanka-item" aria-hidden="true">今日もまた「愛している」では足りなくてひとり数える三十一音</div>
+          <div class="tanka-item" aria-hidden="true">結露したガラスに指を濡らしつつ家族四人の名前を記す</div>
+          <div class="tanka-item" aria-hidden="true">二歳児が拾い集めた庭先の松ぼっくりに雪ふりつもる</div>
+          <div class="tanka-item" aria-hidden="true">今日もまた憤りつつ床に入る愛しているのに愛しているのに</div>
+          <div class="tanka-item" aria-hidden="true">花びらが夜につぼみになるようにベッドでふたり絡む指さき</div>
+          <div class="tanka-item" aria-hidden="true">玄関が閉まる最後の最後まで顔をみあわせ振りあう手と手</div>
+          <div class="tanka-item" aria-hidden="true">妻と二歳長女にかしずく日々のなか０歳次女の無言を抱く</div>
+          <div class="tanka-item" aria-hidden="true">「くまにきをつけるんだよ」と母親の真似する２歳の朝の見送り</div>
+          <div class="tanka-item" aria-hidden="true">ローソンでから揚げを買うたまゆらにますます暗くなるゆうまぐれ</div>
+          <div class="tanka-item" aria-hidden="true">手をほどき遊具へ走る吾子の影ずいぶん遠く遠くへ伸びる</div>
+          <div class="tanka-item" aria-hidden="true">百円がなくて精米器を前になにもできずに仰ぐ名月</div>
+          <div class="tanka-item" aria-hidden="true">二歳児がふたつの指でふるふると触れれば揺れる白百合の花</div>
+          <div class="tanka-item" aria-hidden="true">手をつなぐ影伸びらかな坂道でスズムシを聞く晩夏の夕べ</div>
+          <div class="tanka-item" aria-hidden="true">また増えたメガネのきずは二歳児とすごした夏の勲章として</div>
+          <div class="tanka-item" aria-hidden="true">残されて冷えたシチューを食べながらしみじみ思う親になったと</div>
+          <div class="tanka-item" aria-hidden="true">ママたちの輪に入れずに園庭にしゃがんで吾子とパンジーつつく</div>
+          <div class="tanka-item" aria-hidden="true">幼な子は走って赤子はしゃっくりしうぐいすは鳴き夏至の風ふく</div>
+          <div class="tanka-item" aria-hidden="true">梅雨空に中指たてているようなアスパラガスが庭先になる</div>
+          <div class="tanka-item" aria-hidden="true">子が眠る夫婦の時間にお互いが撮った子どもの写真を見せ合う</div>
+          <div class="tanka-item" aria-hidden="true">妻のいない我が家を「オレの城だぞ」と二歳児にむけうそぶいている</div>
+          <div class="tanka-item" aria-hidden="true">無言にて差し伸べられた手をにぎり無言で起こす身重の妻を</div>
+          <div class="tanka-item" aria-hidden="true">「おひさまがねんねしたね」と子にむけて妻が詩人になる夕まぐれ</div>
+          <div class="tanka-item" aria-hidden="true">読む人に与える余白が少ないとわたしの短歌にＡＩは言う</div>
+          <div class="tanka-item" aria-hidden="true">シーソーが上がるのを待つ子のためにゆっくりゆっくり体重乗せて</div>
+          <div class="tanka-item" aria-hidden="true">朝焼けのひかり差し込む玄関を音立てぬよう出勤をする</div>
+          <div class="tanka-item" aria-hidden="true">ほっぺたをくすぐるきみのゆびさきに目覚める朝の光は白く</div>
+          <div class="tanka-item" aria-hidden="true">寝ることを泣いて嫌がる幼子の一日ひとひの重さを思う</div>
+          <div class="tanka-item" aria-hidden="true">口もとをいちごで染める幼な子はもうすぐ姉になること知らず</div>
+          <div class="tanka-item" aria-hidden="true">１センチ大きくなった靴を履き子は走りだす追い風のなか</div>
+          <div class="tanka-item" aria-hidden="true">病休がふた月となるデスクにてしんねり笑う猫の置き物</div>
+          <div class="tanka-item" aria-hidden="true">天窓にながれる雲を仰ぎ見る泣き止まぬ子を抱き続けて</div>
+          <div class="tanka-item" aria-hidden="true">あたらしい万年筆で書き写す阿佐緒の歌はブルーブラック</div>
+          <div class="tanka-item" aria-hidden="true">雪解けの水にかがやく青空を法定速度で飛び越えていく</div>
+          <div class="tanka-item" aria-hidden="true">このあいだアンパンマンと話してた甥とＬＩＮＥで友だちになる</div>
+          <div class="tanka-item" aria-hidden="true">牛乳を飲む子のためにストローをもつ指さきに伝う冷たさ</div>
+          <div class="tanka-item" aria-hidden="true">自らの意見は通らぬ家を出て泉ケ岳を遠目に歩む</div>
+          <div class="tanka-item" aria-hidden="true">公園にはじめて降り立つおさなごが残した12㎝の足あと</div>
+          <div class="tanka-item" aria-hidden="true">眠らずに吾の帰りを待っているお風呂上がりの子のあたたかさ</div>
+          <div class="tanka-item" aria-hidden="true">吾子が寝る家に帰って吾子が寝る家を出ていく暗い駐車場</div>
+          <div class="tanka-item" aria-hidden="true">「おはよう」と「ざっす」と「うぃっす」を使い分け朝日さしこむオフィスを歩く</div>
+          <div class="tanka-item" aria-hidden="true">iPhoneもとらえきれない青空の下でぼくらは草刈りをする</div>
+          <div class="tanka-item" aria-hidden="true">ふるふるとつかまり立ちをする吾子の背中にいつか巣立つ日を見る</div>
+          <div class="tanka-item" aria-hidden="true">川べりに捨てられているレジ袋シオカラトンボが翅を休める</div>
+          <div class="tanka-item" aria-hidden="true">リビングの窓から手を振る吾子にむけ点滅させるブレーキランプ</div>
+          <div class="tanka-item" aria-hidden="true">ひさびさの定時上がりに高ひかる西日へむけてかざす手のひら</div>
+          <div class="tanka-item" aria-hidden="true">「おはよう」を交わす間合いをはかりつつゴミ袋持つ人が行き交う</div>
+          <div class="tanka-item" aria-hidden="true">これだって君との日々の結晶と排水溝の汚れを流す</div>
+          <div class="tanka-item" aria-hidden="true">雪煙過ぎてもろ目を見開けば君のまつ毛で光る氷片</div>
+          <div class="tanka-item" aria-hidden="true">吾子を抱き吾子のフォト見て吾子の寝る顔見て吾子のフォトを撮る午後</div>
+          <div class="tanka-item" aria-hidden="true">独り舞う虚しさを知り朽葉らが終の住処とする吹き溜まり</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tanka-controls reveal">
+      <button class="tanka-btn" id="tankaPrev" aria-label="左へ移動(過去の歌)" title="左へ">←</button>
+      <button class="tanka-btn" id="tankaPlay" aria-label="再生 / 停止" title="再生/停止">▶</button>
+      <button class="tanka-btn" id="tankaNext" aria-label="右へ移動(次の歌)" title="右へ">→</button>
+      <div class="tanka-speed">
+        <label for="tankaSpeed">Speed</label>
+        <input type="range" id="tankaSpeed" min="10" max="200" value="25" step="5">
+        <span class="speed-val" id="tankaSpeedVal">×0.5</span>
+      </div>
+    </div>
+
+    <div class="tanka-note reveal" style="margin-top:2rem; text-align:center; font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.2em;">
+      <a href="https://note.com/chiba_no_note" target="_blank" rel="noopener noreferrer" style="color:var(--gray); text-decoration:none; border-bottom:1px solid currentColor; padding-bottom:2px; transition:color 0.3s;" onmouseover="this.style.color='var(--ink)'" onmouseout="this.style.color='var(--gray)'">more tanka on note →</a>
+    </div>
+  </section>
+
+  <!-- PHOTO -->
+  <section id="photo">
+    <h2 class="section-title reveal">
+      <span class="section-idx">02</span>Photograph <span class="jp">写真</span>
+    </h2>
+
+    <div class="photo-grid">
+      <div class="photo photo-1 reveal">
+        <img src="images/P001.JPG" alt="写真 001" loading="lazy">
+        <div class="photo-caption">001</div>
+      </div>
+      <div class="photo photo-2 reveal">
+        <img src="images/P002.jpg" alt="写真 002" loading="lazy">
+        <div class="photo-caption">002</div>
+      </div>
+      <div class="photo photo-3 reveal">
+        <img src="images/P003.jpeg" alt="写真 003" loading="lazy">
+        <div class="photo-caption">003</div>
+      </div>
+      <div class="photo photo-4 reveal">
+        <img src="images/P004.JPG" alt="写真 004" loading="lazy">
+        <div class="photo-caption">004</div>
+      </div>
+      <div class="photo photo-5 reveal">
+        <img src="images/P005.JPG" alt="写真 005" loading="lazy">
+        <div class="photo-caption">005</div>
+      </div>
+      <div class="photo photo-6 reveal">
+        <img src="images/P006.JPG" alt="写真 006" loading="lazy">
+        <div class="photo-caption">006</div>
+      </div>
+      <div class="photo photo-7 reveal">
+        <img src="images/P007.JPEG" alt="写真 007" loading="lazy">
+        <div class="photo-caption">007</div>
+      </div>
+      <div class="photo photo-8 reveal">
+        <img src="images/P008.jpg" alt="写真 008" loading="lazy">
+        <div class="photo-caption">008</div>
+      </div>
+      <div class="photo photo-9 reveal">
+        <img src="images/P009.JPG" alt="写真 009" loading="lazy">
+        <div class="photo-caption">009</div>
+      </div>
+      <div class="photo photo-10 reveal">
+        <img src="images/P010.jpg" alt="写真 010" loading="lazy">
+        <div class="photo-caption">010</div>
+      </div>
+      <div class="photo photo-11 reveal">
+        <img src="images/P011.jpg" alt="写真 011" loading="lazy">
+        <div class="photo-caption">011</div>
+      </div>
+      <div class="photo photo-12 reveal">
+        <img src="images/P012.JPG" alt="写真 012" loading="lazy">
+        <div class="photo-caption">012</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STAMP -->
+  <section id="stamp">
+    <h2 class="section-title reveal">
+      <span class="section-idx">03</span>Stamp <span class="jp">スタンプ</span>
+    </h2>
+
+    <div class="stamp-wrap">
+      <div class="stamp-visual reveal">
+        <img class="stamp-main-img"
+             src="images/S001.png"
+             alt="ちばっちのカワィィネコチャン メインビジュアル"
+             loading="lazy">
+      </div>
+
+      <div class="stamp-info reveal">
+        <div class="meta-line">LINE Sticker / 2024 — Now on sale</div>
+        <h3>ちばっちの<br><span class="accent">カワィィ</span>ネコチャン</h3>
+        <div class="price">¥120 — On LINE STORE</div>
+        <p>
+          とてもカワィィネコチャンのスタンプです。<br>
+          圧倒的な使い勝手により、いま以上にカワィィLINEスタイルを提案します。
+        </p>
+        <a href="https://line.me/S/sticker/32332718/?lang=ja&utm_source=gnsh_stickerDetail"
+           class="btn"
+           target="_blank"
+           rel="noopener noreferrer">
+          <span>Buy on LINE STORE</span>
+          <span class="arrow">→</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- 全スタンプ一覧 -->
+    <div class="stamp-thumbs reveal">
+      <div class="stamp-thumb">
+        <img src="images/S002.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S003.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S004.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S005.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S006.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S007.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S008.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S009.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S010.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S011.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S012.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S013.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S014.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S015.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S016.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S017.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S018.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S019.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S020.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S021.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S022.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S023.png" alt="スタンプ" loading="lazy">
+      </div>
+      <div class="stamp-thumb">
+        <img src="images/S024.png" alt="スタンプ" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <h2 class="section-title reveal">
+      <span class="section-idx">04</span>About <span class="jp">自己紹介</span>
+    </h2>
+
+    <div class="about-wrap">
+      <div class="about-img reveal">
+        <img src="images/Prof.jpeg" alt="ちばっち" style="width:100%;height:100%;object-fit:cover;display:block;">
+      </div>
+
+      <div class="about-text reveal">
+        <h3>宮城の人で、パパで<span class="red">歌人</span>—</h3>
+        <p>
+          平成初期の嵐の夜、誕生。<br>
+          全体の奉仕者として働くかたわら、第一子誕生を機に短歌を詠みはじめる。<br>
+          二児の父として、計4カ月の育児休暇の経験を持つ。<br>
+          2025年6月、短歌人会入会。
+        </p>
+        <p style="font-family:'JetBrains Mono',monospace; font-size:0.65rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--gray); margin-bottom:1rem;">— Awards</p>
+        <ul style="list-style:none; margin-bottom:2.5rem; display:flex; flex-direction:column; gap:0.8rem;">
+          <li style="font-size:0.9rem; line-height:1.8; border-left:2px solid var(--red); padding-left:1rem;">令和6年下期 河北歌壇賞 <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gray); margin-left:0.5rem;">2024</span></li>
+          <li style="font-size:0.9rem; line-height:1.8; border-left:2px solid var(--red); padding-left:1rem;">第52回東北短歌大会 優秀賞 <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gray); margin-left:0.5rem;">2025</span></li>
+          <li style="font-size:0.9rem; line-height:1.8; border-left:2px solid var(--red); padding-left:1rem;">第62回宮城県芸術祭 短歌一般の部 佳作 <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gray); margin-left:0.5rem;">2025</span></li>
+          <li style="font-size:0.9rem; line-height:1.8; border-left:2px solid var(--red); padding-left:1rem;">第36回宮城県短歌賞 秀逸 <span style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:var(--gray); margin-left:0.5rem;">2025</span></li>
+        </ul>
+
+        <dl class="about-meta">
+          <div>
+            <dt>Based in</dt>
+            <dd>Miyagi, Japan</dd>
+          </div>
+          <div>
+            <dt>Working since</dt>
+            <dd>2013 —</dd>
+          </div>
+          <div>
+            <dt>Tools</dt>
+            <dd>Pen, Nikon J5, Nikon Z50Ⅱ, iPad</dd>
+          </div>
+          <div>
+            <dt>Likes</dt>
+            <dd>短歌、ボードゲーム、郷土玩具、スカジャン</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-mark">— Chibacchi Works.</div>
+
+  <div class="footer-grid">
+    <div>
+      <h4>— Get in touch</h4>
+      <p class="big">
+        ひっそりとやっています。<br>
+        フォロー、いいね、お気軽に。
+      </p>
+    </div>
+    <div>
+      <h4>— Social</h4>
+      <a href="https://x.com/chiba_no_tanka" target="_blank" rel="noopener noreferrer">X / Twitter →</a>
+      <a href="https://note.com/chiba_no_note" target="_blank" rel="noopener noreferrer">note →</a>
+      <a href="https://line.me/S/sticker/32332718/?lang=ja&utm_source=gnsh_stickerDetail" target="_blank" rel="noopener noreferrer">LINE STORE →</a>
+    </div>
+    <div>
+      <h4>— Index</h4>
+      <a href="#tanka">01 / Tanka</a>
+      <a href="#photo">02 / Photo</a>
+      <a href="#stamp">03 / Stamp</a>
+      <a href="#about">04 / About</a>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 — Chibacchi Works. All works belong to the author.</span>
+    <span>Site / hand-coded with care</span>
+  </div>
+</footer>
+
+<script>
+  // scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('in'), i * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // ===== Tanka manual scroll =====
+  (function() {
+    const track = document.getElementById('tankaTrack');
+    const viewport = document.getElementById('tankaViewport');
+    const prevBtn = document.getElementById('tankaPrev');
+    const nextBtn = document.getElementById('tankaNext');
+    const playBtn = document.getElementById('tankaPlay');
+    const speedInput = document.getElementById('tankaSpeed');
+    const speedVal = document.getElementById('tankaSpeedVal');
+    if (!track) return;
+
+    let position = 0;          // 現在のtranslateX値(px、負の方向)
+    let loopWidth = 0;         // 1セット分の幅
+    let speed = 25;            // px/秒(slider基準値)
+    let direction = -1;        // -1: 左へ流れる(右から左へ流入) / +1: 右へ
+    let playing = true;
+    let lastTime = null;
+
+    const stage = track.closest('.tanka-stage');
+
+    const LH = 1.6;
+
+    function countChars(item) {
+      return [...(item.textContent || '').trim()].length;
+    }
+
+    function updateLayout() {
+      const items = track.children;
+      const half = Math.floor(items.length / 2) || items.length;
+      let max = 0;
+      for (let i = 0; i < half; i++) {
+        const c = countChars(items[i]);
+        if (c > max) max = c;
+      }
+      // 2〜3列折り返し前提: 1列あたりの文字数
+      const charsPerCol = Math.ceil(max / 2.2) + 1;
+      stage.style.setProperty('--tanka-chars', charsPerCol);
+      const targetH = Math.min(window.innerHeight * 0.72, 680) * 0.88;
+      const fs = Math.max(12, Math.min(targetH / (charsPerCol * LH), 36));
+      stage.style.setProperty('--tanka-fs', fs + 'px');
+    }
+
+    function measure() {
+      // 全アイテムの半分(set1ぶん)の幅を計算
+      const items = track.children;
+      let w = 0;
+      const half = items.length / 2;
+      for (let i = 0; i < half; i++) {
+        const item = items[i];
+        const style = getComputedStyle(item);
+        w += item.offsetWidth + parseFloat(style.marginRight);
+      }
+      loopWidth = w;
+    }
+
+    function applyTransform() {
+      // 無限ループ: positionを -loopWidth ~ 0 の範囲に正規化
+      if (loopWidth > 0) {
+        if (position <= -loopWidth) position += loopWidth;
+        if (position > 0) position -= loopWidth;
+      }
+      track.style.transform = `translateX(${position}px)`;
+    }
+
+    function tick(t) {
+      if (!lastTime) lastTime = t;
+      const dt = (t - lastTime) / 1000;
+      lastTime = t;
+      if (playing) {
+        position += direction * speed * dt;
+        applyTransform();
+      }
+      requestAnimationFrame(tick);
+    }
+
+    function nudge(dir) {
+      // ボタン押下時: 一首ぶん(平均的な幅)ジャンプ
+      const sample = track.children[0];
+      if (!sample) return;
+      const style = getComputedStyle(sample);
+      const step = sample.offsetWidth + parseFloat(style.marginRight);
+      position += dir * step;
+      applyTransform();
+    }
+
+    function setPlaying(p) {
+      playing = p;
+      playBtn.textContent = p ? '❚❚' : '▶';
+      playBtn.classList.toggle('active', p);
+    }
+
+    // ボタン: → 次へ進む = 右から左へ歌が流れてくる(positionは負方向へ)
+    nextBtn.addEventListener('click', () => {
+      direction = -1;
+      nudge(-1);
+    });
+    // ← 前へ戻す = 左から右へ歌が戻る(positionは正方向へ)
+    prevBtn.addEventListener('click', () => {
+      direction = +1;
+      nudge(+1);
+    });
+    playBtn.addEventListener('click', () => setPlaying(!playing));
+
+    speedInput.addEventListener('input', (e) => {
+      speed = parseFloat(e.target.value);
+      speedVal.textContent = '×' + (speed / 50).toFixed(1);
+    });
+
+    // 初期化
+    setPlaying(true);
+    window.addEventListener('load', () => {
+      updateLayout();
+      measure();
+      position = -(Math.random() * loopWidth);
+      requestAnimationFrame(tick);
+    });
+    window.addEventListener('resize', () => {
+      updateLayout();
+      measure();
+    });
+    // フォント読み込み後に再計測(縦書き幅が変わるため)
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        updateLayout();
+        measure();
+      });
+    }
+  })();
+
+  // ===== Lightbox =====
+  (function() {
+    const lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.innerHTML = '<button class="lightbox-close" aria-label="閉じる">×</button><img class="lightbox-img" src="" alt="">';
+    document.body.appendChild(lb);
+
+    const lbImg = lb.querySelector('.lightbox-img');
+    const lbClose = lb.querySelector('.lightbox-close');
+
+    function open(src, alt) {
+      lbImg.src = src;
+      lbImg.alt = alt || '';
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function close() {
+      lb.classList.remove('open');
+      document.body.style.overflow = '';
+      lbImg.src = '';
+    }
+
+    document.querySelectorAll('.photo').forEach(photo => {
+      photo.addEventListener('click', () => {
+        const img = photo.querySelector('img');
+        if (img) open(img.src, img.alt);
+      });
+    });
+
+    lbClose.addEventListener('click', (e) => { e.stopPropagation(); close(); });
+    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  })();
+</script>
+
+</body>
+</html>

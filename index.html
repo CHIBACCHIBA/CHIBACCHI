@@ -21,6 +21,10 @@
 
   html { scroll-behavior: smooth; }
 
+  .sp-only {
+    display: none;
+  }
+
   body {
     background: var(--paper);
     color: var(--ink);
@@ -341,6 +345,12 @@
 
 /* ===== RESPONSIVE (MOBILE) ===== */
 @media (max-width: 768px) {
+
+.sp-only {
+      display: inline;
+    }
+
+
   #tanka {
     padding-top: 3.5rem;
     padding-bottom: 2.5rem; 
@@ -1239,7 +1249,7 @@
       </div>
 
       <div class="about-text reveal">
-        <h3>宮城の人で、パパで<span class="red">歌人</span>—</h3>
+        <h3>宮城の人で、<br class="sp-only">パパで<span class="red">歌人</span>—</h3>
         <p>
           平成初期の嵐の夜、誕生。<br>
           全体の奉仕者として働くかたわら、第一子誕生を機に短歌を詠みはじめる。<br>

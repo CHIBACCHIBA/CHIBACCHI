@@ -174,64 +174,41 @@
 }
 
 /* ===== STAGE ===== */
-
 .tanka-stage {
   position: relative;
-  height: calc(18 * 1em * 1.6 + 0rem);
+  height: calc(18 * 1rem * 1.18 + 2.4rem); 
 }
 
 /* ===== VIEWPORT (SCROLL AREA) ===== */
-
 .tanka-viewport {
   position: relative;
   height: 100%;
-
-  /* スクロール挙動 */
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-
-  /* スクロール速度体感調整 */
   scroll-padding-inline: 2rem;
 
   /* edge fade */
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    #000 5%,
-    #000 95%,
-    transparent 100%
-  );
-          mask-image: linear-gradient(
-    to right,
-    transparent 0%,
-    #000 5%,
-    #000 95%,
-    transparent 100%
-  );
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
 
-  /* scrollbar非表示 */
   scrollbar-width: none;
 }
 .tanka-viewport::-webkit-scrollbar {
   display: none;
 }
 
-
 /* ===== TRACK ===== */
-
 .tanka-track {
   display: flex;
   height: 100%;
   width: max-content;
-
   transform: translate3d(0,0,0);
   will-change: transform;
 }
 
 /* ===== ITEM ===== */
-
 .tanka-item {
   writing-mode: vertical-rl;
   -webkit-writing-mode: vertical-rl;
@@ -243,8 +220,7 @@
   line-height: 1.6;
   letter-spacing: 0.18em;
 
-  height: calc(18 * 1em * 1.6);
-
+  height: 100%;
   padding: 1.2rem 1.4rem;
   margin-right: 0.4rem; 
 
@@ -262,7 +238,7 @@
   align-items: center;
   justify-content: center;
   gap: 2.5rem;
-  margin-top: 4rem;
+  margin-top: 1rem; 
   font-family: "JetBrains Mono", monospace;
   position: relative;
   z-index: 10;
@@ -276,6 +252,7 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
+  flex-shrink: 0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -283,31 +260,26 @@
   font-size: 0.85rem;
   transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
-
 .tanka-btn:hover {
   border-color: var(--ink);
   color: var(--red);
   transform: translateY(-2px);
 }
-
 .tanka-btn:active {
   transform: translateY(0) scale(0.95);
 }
 
-/* 再生中（JSで切り替わるactiveクラス）の佇まい */
 #tankaPlay.active {
   background: var(--ink);
   color: var(--paper-warm);
   border-color: var(--ink);
 }
 
-/* スピード調整エリア */
+/* スピード調整 */
 .tanka-speed {
   display: flex;
   align-items: center;
 }
-
-/* スライダー（一から美しく作り直す） */
 .tanka-speed input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
@@ -315,12 +287,9 @@
   background: transparent;
   cursor: pointer;
 }
-
 .tanka-speed input[type="range"]:focus {
   outline: none;
 }
-
-/* スライダーの線（トラック） */
 .tanka-speed input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 1px;
@@ -332,15 +301,13 @@
   height: 1px;
   background: rgba(10, 10, 10, 0.2);
 }
-
-/* スライダーのつまみ（ノブ） */
 .tanka-speed input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   height: 7px;
   width: 7px;
   border-radius: 50%;
   background: var(--ink);
-  margin-top: -3px; /* 線の中心に合わせる調整 */
+  margin-top: -3px;
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s;
 }
 .tanka-speed input[type="range"]::-moz-range-thumb {
@@ -351,8 +318,6 @@
   background: var(--ink);
   transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), background 0.3s;
 }
-
-/* スライダーホバー時の繊細な反応 */
 .tanka-speed input[type="range"]:hover::-webkit-slider-runnable-track {
   background: rgba(10, 10, 10, 0.4);
 }
@@ -365,7 +330,6 @@
   transform: scale(1.4);
 }
 
-/* 倍率テキスト */
 .tanka-speed-label {
   font-size: 0.65rem;
   letter-spacing: 0.15em;
@@ -373,11 +337,30 @@
   min-width: 75px;
 }
 
-/* スマホ対応（メディアクエリ） */
+
+/* ===== RESPONSIVE (MOBILE) ===== */
 @media (max-width: 768px) {
+  #tanka {
+    padding-top: 6rem;
+    padding-bottom: 2rem; 
+  }
+
+
+  .tanka-stage {
+    height: calc(28 * 0.95rem * 1.22 + 2rem);
+  }
+
+ 
+  .tanka-item {
+    font-size: 0.95rem;
+    letter-spacing: 0.22em;
+    height: 100%; 
+    padding: 1rem 1.1rem; 
+  }
+
   .tanka-control {
     gap: 1.5rem;
-    margin-top: 3rem;
+    margin-top: 0.8rem;
   }
   .tanka-btn {
     width: 38px;
@@ -385,27 +368,7 @@
     font-size: 0.75rem;
   }
   .tanka-speed input[type="range"] {
-    width: 80px; /* 横幅を少しコンパクトに */
-  }
-}
-
-
-/* ===== MOBILE ===== */
-
-@media (max-width: 768px) {
-  #tanka {
-    padding-top: 6rem;
-    padding-bottom: 4rem;
-  }
-
-  .tanka-stage {
-    height: 36rem;
-  }
-
-  .tanka-item {
-    font-size: 0.95rem;
-    letter-spacing: 0.22em;
-    height: calc(28 * (1em + 0.22em) + 3rem); 
+    width: 80px;
   }
 }
 

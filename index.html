@@ -64,7 +64,6 @@
 .hero-img {
   width: 100%;
   height: auto;
-  object-fit: contain;
   display: block;
 }
 
@@ -166,59 +165,75 @@
   }
 
   /* ===== TANKA ===== */
-  #tanka {
-    background: var(--paper-warm);
-    padding-top: 10rem;
-    padding-bottom: 6rem;
-  }
+#tanka {
+  background: var(--paper-warm);
+  padding-top: 10rem;
+  padding-bottom: 6rem;
+}
 
-  .tanka-stage {
-    position: relative;
-    /* 文字数はJSで計測して --tanka-chars に設定。フォールバック31 */
-    --tanka-fs: 1rem;
-    --tanka-lh: 1.6;
-    --tanka-chars: 31;
-    height: calc(var(--tanka-fs) * var(--tanka-lh) * var(--tanka-chars) + 4rem);
-    transition: height 0.5s cubic-bezier(0.7, 0, 0.3, 1);
-  }
+.tanka-stage {
+  position: relative;
+  /* 文字数はJSで計測して --tanka-chars に設定。フォールバック31 */
+  --tanka-fs: 1rem;
+  --tanka-lh: 1.6;
+  --tanka-chars: 31;
+  height: calc(var(--tanka-fs) * var(--tanka-lh) * var(--tanka-chars) + 4rem);
+  transition: height 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+}
 
-  .tanka-viewport {
-    position: relative;
-    height: 100%;
-    overflow: hidden;
-    /* edge fade */
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
-            mask-image: linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%);
-  }
+.tanka-viewport {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  /* edge fade */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+          mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+}
 
-  .tanka-track {
-    display: flex;
-    height: 100%;
-    width: max-content;
-    will-change: transform;
-  }
+.tanka-track {
+  display: flex;
+  height: 100%;
+  width: max-content;
+  /* スマホでのカクつき防止 */
+  transform: translateZ(0);
+}
 
-  .tanka-item {
-    writing-mode: vertical-rl;
-    -webkit-writing-mode: vertical-rl;
-    font-family: "Shippori Mincho", serif;
-    font-weight: 400;
-    line-height: var(--tanka-lh);
-    letter-spacing: 0.25em;
-    font-size: var(--tanka-fs);
-    height: 100%;
-    padding: 2rem 2.5rem;
-    margin-right: 1rem;
-    position: relative;
-    flex-shrink: 0;
-    border-right: 1px solid rgba(10,10,10,0.15);
-  }
+.tanka-item {
+  writing-mode: vertical-rl;
+  -webkit-writing-mode: vertical-rl;
 
-  .tanka-item:nth-child(11n+6) {
-    font-family: "Cormorant Garamond", serif;
-    font-style: italic;
-  }
+  font-family: "Shippori Mincho", serif;
+  font-weight: 400;
+  line-height: var(--tanka-lh);
+  letter-spacing: 0.25em;
+  font-size: var(--tanka-fs);
 
+  height: 100%;
+  padding: 2rem 2.5rem;
+  margin-right: 1rem;
+  position: relative;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(10, 10, 10, 0.15);
+
+  /* ★ スマホで勝手に文字サイズが変わるのを防止 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+
+  /* ★ 斜め表示・にじみ防止 */
+  transform: translateZ(0);
+}
   /* ===== controls ===== */
   .tanka-controls {
     margin-top: 2.5rem;
@@ -791,9 +806,15 @@
 <main>
 
   <!-- HERO -->
-  <section id="hero">
+ <section id="hero">
+  <picture>
+    <!-- スマホ用 -->
+    <source srcset="images/TOP_sp.jpg" media="(max-width: 768px)">
+
+    <!-- PC用 -->
     <img src="images/TOP.jpg" alt="" class="hero-img">
-  </section>
+  </picture>
+</section>
 
   <!-- TANKA -->
   <section id="tanka">

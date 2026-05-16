@@ -164,7 +164,7 @@
     letter-spacing: 0.3em;
   }
 
-/* ===== TANKA (STABLE MOBILE FIX) ===== */
+/* ===== TANKA (STABLE MOBILE FIX + SCROLL UX) ===== */
 
 #tanka {
   background: var(--paper-warm);
@@ -177,7 +177,7 @@
 
 .tanka-stage {
   position: relative;
-  height: 42rem; /* ← JS計算をやめて固定 */
+  height: 42rem; /* JS計算をやめて完全固定 */
 }
 
 /* ===== VIEWPORT ===== */
@@ -185,9 +185,14 @@
 .tanka-viewport {
   position: relative;
   height: 100%;
-  overflow: hidden;
 
-  /* フェードは残す */
+  /* スクロール基盤 */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  /* edge fade */
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0%,
@@ -202,6 +207,22 @@
     #000 94%,
     transparent 100%
   );
+
+  /* scrollbar非表示 */
+  scrollbar-width: none;
+}
+.tanka-viewport::-webkit-scrollbar {
+  display: none;
+}
+
+/* PCで掴める感 */
+@media (hover: hover) and (pointer: fine) {
+  .tanka-viewport {
+    cursor: grab;
+  }
+  .tanka-viewport:active {
+    cursor: grabbing;
+  }
 }
 
 /* ===== TRACK ===== */
@@ -211,7 +232,7 @@
   height: 100%;
   width: max-content;
 
-  /* transformのブレを防ぐ */
+  /* transformブレ防止 */
   transform: translate3d(0,0,0);
   will-change: transform;
 }
@@ -225,8 +246,8 @@
 
   font-family: "Shippori Mincho", serif;
   font-weight: 400;
-  font-size: 1rem;          /* ← 固定 */
-  line-height: 1.6;         /* ← 固定 */
+  font-size: 1rem;   /* 完全固定 */
+  line-height: 1.6;  /* 完全固定 */
   letter-spacing: 0.25em;
 
   height: 100%;
@@ -236,10 +257,24 @@
 
   border-right: 1px solid rgba(10,10,10,0.15);
 
-  /* Safari対策 */
+  /* Safari / iOS対策 */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   backface-visibility: hidden;
+
+  /* ⑤ 中央強調用（初期は控えめ） */
+  opacity: 0.45;
+  filter: blur(0.2px);
+  transition:
+    opacity 0.4s ease,
+    filter 0.4s ease;
+}
+
+/* ===== CENTER ACTIVE (⑤) ===== */
+
+.tanka-item.is-active {
+  opacity: 1;
+  filter: none;
 }
 
 /* ===== VARIATION ===== */

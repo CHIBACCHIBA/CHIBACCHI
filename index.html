@@ -164,28 +164,30 @@
     letter-spacing: 0.3em;
   }
 
-  /* ===== TANKA ===== */
+/* ===== TANKA (STABLE MOBILE FIX) ===== */
+
 #tanka {
   background: var(--paper-warm);
   padding-top: 10rem;
   padding-bottom: 6rem;
+  overflow: hidden;
 }
+
+/* ===== STAGE ===== */
 
 .tanka-stage {
   position: relative;
-  /* 文字数はJSで計測して --tanka-chars に設定。フォールバック31 */
-  --tanka-fs: 1rem;
-  --tanka-lh: 1.6;
-  --tanka-chars: 31;
-  height: calc(var(--tanka-fs) * var(--tanka-lh) * var(--tanka-chars) + 4rem);
-  transition: height 0.5s cubic-bezier(0.7, 0, 0.3, 1);
+  height: 42rem; /* ← JS計算をやめて固定 */
 }
+
+/* ===== VIEWPORT ===== */
 
 .tanka-viewport {
   position: relative;
   height: 100%;
   overflow: hidden;
-  /* edge fade */
+
+  /* フェードは残す */
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0%,
@@ -202,123 +204,63 @@
   );
 }
 
+/* ===== TRACK ===== */
+
 .tanka-track {
   display: flex;
   height: 100%;
   width: max-content;
-  /* スマホでのカクつき防止 */
-  transform: translateZ(0);
+
+  /* transformのブレを防ぐ */
+  transform: translate3d(0,0,0);
+  will-change: transform;
 }
+
+/* ===== ITEM ===== */
 
 .tanka-item {
   writing-mode: vertical-rl;
   -webkit-writing-mode: vertical-rl;
+  text-orientation: upright;
 
   font-family: "Shippori Mincho", serif;
   font-weight: 400;
-  line-height: var(--tanka-lh);
+  font-size: 1rem;          /* ← 固定 */
+  line-height: 1.6;         /* ← 固定 */
   letter-spacing: 0.25em;
-  font-size: var(--tanka-fs);
 
   height: 100%;
   padding: 2rem 2.5rem;
   margin-right: 1rem;
-  position: relative;
   flex-shrink: 0;
-  border-right: 1px solid rgba(10, 10, 10, 0.15);
 
-  /* ★ スマホで勝手に文字サイズが変わるのを防止 */
+  border-right: 1px solid rgba(10,10,10,0.15);
+
+  /* Safari対策 */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-
-  /* ★ 斜め表示・にじみ防止 */
-  transform: translateZ(0);
+  backface-visibility: hidden;
 }
-  /* ===== controls ===== */
-  .tanka-controls {
-    margin-top: 2.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
-    font-family: "JetBrains Mono", monospace;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
+
+/* ===== VARIATION ===== */
+
+.tanka-item:nth-child(11n+6) {
+  font-family: "Cormorant Garamond", serif;
+  font-style: italic;
+}
+
+/* ===== MOBILE OVERRIDE ===== */
+
+@media (max-width: 768px) {
+  .tanka-stage {
+    height: 36rem;
   }
 
-  .tanka-btn {
-    width: 52px;
-    height: 52px;
-    border: 1px solid var(--ink);
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s cubic-bezier(0.7, 0, 0.3, 1);
-    font-family: inherit;
-    font-size: 1.1rem;
-    user-select: none;
+  .tanka-item {
+    font-size: 0.95rem;
+    letter-spacing: 0.22em;
   }
-
-  .tanka-btn:hover,
-  .tanka-btn.active {
-    background: var(--ink);
-    color: var(--paper);
-  }
-
-  .tanka-btn:active { transform: scale(0.94); }
-
-  .tanka-speed {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    color: var(--gray);
-  }
-
-  .tanka-speed label {
-    letter-spacing: 0.3em;
-    font-size: 0.65rem;
-  }
-
-  .tanka-speed input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 140px;
-    height: 1px;
-    background: var(--ink);
-    outline: none;
-    cursor: pointer;
-  }
-  .tanka-speed input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    background: var(--red);
-    border: 1px solid var(--ink);
-    cursor: pointer;
-    border-radius: 0;
-  }
-  .tanka-speed input[type="range"]::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    background: var(--red);
-    border: 1px solid var(--ink);
-    cursor: pointer;
-    border-radius: 0;
-  }
-
-  .tanka-speed .speed-val {
-    font-family: "Cormorant Garamond", serif;
-    font-style: italic;
-    font-size: 1rem;
-    color: var(--ink);
-    min-width: 2.5em;
-  }
+}
 
   /* ===== PHOTO ===== */
   #photo {

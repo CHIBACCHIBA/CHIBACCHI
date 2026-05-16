@@ -138,7 +138,7 @@
     font-size: clamp(3rem, 7vw, 6rem);
     line-height: 0.95;
     letter-spacing: -0.02em;
-    margin-bottom: 5rem;
+    margin-bottom: 2.5rem;
     display: flex;
     align-items: baseline;
     gap: 2rem;
@@ -176,7 +176,7 @@
 /* ===== STAGE ===== */
 .tanka-stage {
   position: relative;
-  height: calc(18 * 1rem * 1.18 + 2.4rem); 
+  height: calc(18 * 1rem * 1.6); 
 }
 
 /* ===== VIEWPORT (SCROLL AREA) ===== */
@@ -202,6 +202,7 @@
 /* ===== TRACK ===== */
 .tanka-track {
   display: flex;
+  align-items: flex-start;
   height: 100%;
   width: max-content;
   transform: translate3d(0,0,0);
@@ -341,8 +342,8 @@
 /* ===== RESPONSIVE (MOBILE) ===== */
 @media (max-width: 768px) {
   #tanka {
-    padding-top: 6rem;
-    padding-bottom: 2rem; 
+    padding-top: 3.5rem;
+    padding-bottom: 2.5rem; 
   }
 
 
@@ -898,7 +899,6 @@
           <div class="tanka-item">泣き声で起きる朝四時　諦念のようなサイレン遠くで響く</div>
           <div class="tanka-item">ゴミ捨て場にベビーベッドの段ボールちかくに増えたいのちを祝う</div>
           <div class="tanka-item">枯れ葉、枝、マンホール蓋　子と歩く道で全ては楽器にかわる</div>
-          <div class="tanka-item">手のひらについた吾子の血(赤い血が流れている)としみじみ思う</div>
           <div class="tanka-item">うしろからそっと抱き寄せほっぺたの皮脂をすり込む深くしずかに</div>
           <div class="tanka-item">淡雪に月光のさす真夜中にほのと白めく乳飲み子の舌</div>
           <div class="tanka-item">雨と虹、歌集としおり、月とネコ、こたつとみかん、あなたとわたし</div>
@@ -949,7 +949,6 @@
           <div class="tanka-item">公園にはじめて降り立つおさなごが残した12㎝の足あと</div>
           <div class="tanka-item">眠らずに吾の帰りを待っているお風呂上がりの子のあたたかさ</div>
           <div class="tanka-item">吾子が寝る家に帰って吾子が寝る家を出ていく暗い駐車場</div>
-          <div class="tanka-item">「おはよう」と「ざっす」と「うぃっす」を使い分け朝日さしこむオフィスを歩く</div>
           <div class="tanka-item">iPhoneもとらえきれない青空の下でぼくらは草刈りをする</div>
           <div class="tanka-item">ふるふるとつかまり立ちをする吾子の背中にいつか巣立つ日を見る</div>
           <div class="tanka-item">川べりに捨てられているレジ袋シオカラトンボが翅を休める</div>
@@ -982,7 +981,6 @@
           <div class="tanka-item" aria-hidden="true">泣き声で起きる朝四時　諦念のようなサイレン遠くで響く</div>
           <div class="tanka-item" aria-hidden="true">ゴミ捨て場にベビーベッドの段ボールちかくに増えたいのちを祝う</div>
           <div class="tanka-item" aria-hidden="true">枯れ葉、枝、マンホール蓋　子と歩く道で全ては楽器にかわる</div>
-          <div class="tanka-item" aria-hidden="true">手のひらについた吾子の血(赤い血が流れている)としみじみ思う</div>
           <div class="tanka-item" aria-hidden="true">うしろからそっと抱き寄せほっぺたの皮脂をすり込む深くしずかに</div>
           <div class="tanka-item" aria-hidden="true">淡雪に月光のさす真夜中にほのと白めく乳飲み子の舌</div>
           <div class="tanka-item" aria-hidden="true">雨と虹、歌集としおり、月とネコ、こたつとみかん、あなたとわたし</div>
@@ -1033,7 +1031,6 @@
           <div class="tanka-item" aria-hidden="true">公園にはじめて降り立つおさなごが残した12㎝の足あと</div>
           <div class="tanka-item" aria-hidden="true">眠らずに吾の帰りを待っているお風呂上がりの子のあたたかさ</div>
           <div class="tanka-item" aria-hidden="true">吾子が寝る家に帰って吾子が寝る家を出ていく暗い駐車場</div>
-          <div class="tanka-item" aria-hidden="true">「おはよう」と「ざっす」と「うぃっす」を使い分け朝日さしこむオフィスを歩く</div>
           <div class="tanka-item" aria-hidden="true">iPhoneもとらえきれない青空の下でぼくらは草刈りをする</div>
           <div class="tanka-item" aria-hidden="true">ふるふるとつかまり立ちをする吾子の背中にいつか巣立つ日を見る</div>
           <div class="tanka-item" aria-hidden="true">川べりに捨てられているレジ袋シオカラトンボが翅を休める</div>
@@ -1058,7 +1055,7 @@
     <input type="range" id="tankaSpeed" min="0.2" max="2" step="0.1" value="0.5">
   </div>
 
-  <span class="tanka-speed-label">Speed ×0.5</span>
+<span class="tanka-speed-label" id="tankaSpeedVal">Speed ×0.5</span>
 </div>
 
     <div class="tanka-note reveal" style="margin-top:2rem; text-align:center; font-family:'JetBrains Mono',monospace; font-size:0.7rem; letter-spacing:0.2em;">
@@ -1326,26 +1323,22 @@
 
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  // ===== Tanka manual scroll =====
+// ===== Tanka manual scroll =====
   (function() {
     const track = document.getElementById('tankaTrack');
     const viewport = document.getElementById('tankaViewport');
-    
-    // 【修正】HTMLのID（tankaLeft / tankaRight）と完全に一致させました
     const prevBtn = document.getElementById('tankaLeft');
     const nextBtn = document.getElementById('tankaRight');
     const playBtn = document.getElementById('tankaPlay');
     const speedInput = document.getElementById('tankaSpeed');
-    // 【修正】IDではなくクラス名で確実にラベルを取得するように変更
     const speedVal = document.querySelector('.tanka-speed-label');
-    
-    if (!track || !prevBtn || !nextBtn || !playBtn || !speedInput || !speedVal) return;
+    if (!track) return;
 
     let position = 0;          // 現在のtranslateX値(px、負の方向)
     let loopWidth = 0;         // 1セット分の幅
-    // 【修正】初期速度をスライダーの初期値（0.5）× 50 ＝ 25（元々の心地よい速さ）に設定
-    let speed = parseFloat(speedInput.value) * 50; 
-    let direction = -1;        // -1: 左へ流れる(右から左へ流入) / +1: 右へ
+    let baseSpeed = 50;        // 基準速度 (px/秒)
+    let speed = baseSpeed * (speedInput ? parseFloat(speedInput.value) : 0.5); 
+    let direction = -1;        // -1: 左へ流れる / +1: 右へ
     let playing = true;
     let lastTime = null;
 
@@ -1384,6 +1377,7 @@
     }
 
     function applyTransform() {
+      // これが無限ループ（ワープ）の仕掛けです
       if (loopWidth > 0) {
         if (position <= -loopWidth) position += loopWidth;
         if (position > 0) position -= loopWidth;
@@ -1413,27 +1407,37 @@
 
     function setPlaying(p) {
       playing = p;
-      // 【洗練】一時停止マークをミニマルな半角の '||' に変更しました
-      playBtn.textContent = p ? '||' : '▶';
-      playBtn.classList.toggle('active', p);
+      if (playBtn) {
+        playBtn.textContent = p ? '❚❚' : '▶';
+        playBtn.classList.toggle('active', p);
+      }
     }
 
-    nextBtn.addEventListener('click', () => {
-      direction = -1;
-      nudge(-1);
-    });
-    prevBtn.addEventListener('click', () => {
-      direction = +1;
-      nudge(+1);
-    });
-    playBtn.addEventListener('click', () => setPlaying(!playing));
+    // ボタンのクリックイベント（安全に動くよう存在チェックを追加）
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        direction = -1;
+        nudge(-1);
+      });
+    }
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        direction = +1;
+        nudge(+1);
+      });
+    }
+    if (playBtn) {
+      playBtn.addEventListener('click', () => setPlaying(!playing));
+    }
 
-    // 【修正】0.2〜2.0倍のスライダー数値と、実際のスクロール速度を正しく連動
-    speedInput.addEventListener('input', (e) => {
-      const val = parseFloat(e.target.value);
-      speed = val * 50; 
-      speedVal.textContent = 'Speed ×' + val.toFixed(1);
-    });
+    // スライダーを動かしたときの速度調整（バグを修正）
+    if (speedInput && speedVal) {
+      speedInput.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        speed = baseSpeed * val; // スライダーの値を「倍率」として計算
+        speedVal.textContent = 'Speed ×' + val.toFixed(1);
+      });
+    }
 
     // 初期化
     setPlaying(true);

@@ -428,12 +428,17 @@
     object-fit: cover;
   }
 
-  /* 010 を3列目に固定して2行スパン、011・012をその左に並べる */
-  .photo-10 {
-    grid-column: 3;
-    grid-row: span 2;
-    align-self: stretch;
-  }
+
+/* 010 は2行スパンだが、列は自動配置に任せる */
+.photo-10 {
+  grid-row: span 2;
+  align-self: stretch;
+}
+
+.photo-10 img {
+  height: 100%;
+  object-fit: cover;
+}
 
   .photo-10 img {
     height: 100%;
@@ -456,6 +461,45 @@
   }
 
   .photo:hover .photo-caption { opacity: 1; }
+
+
+/* ===== PHOTO / Mobile FINAL FIX ===== */
+@media (max-width: 768px) {
+
+  /* Gridを完全に無効化 */
+  .photo-grid {
+    display: block;
+    column-count: 2;
+    column-gap: 0.5rem;
+  }
+
+  .photo {
+    break-inside: avoid;
+    margin-bottom: 0.5rem;
+    transform: none;
+  }
+
+  /* PC用の指定を完全無効化 */
+  .photo,
+  .photo-1,
+  .photo-2,
+  .photo-10 {
+    grid-column: unset !important;
+    grid-row: unset !important;
+    align-self: unset !important;
+  }
+
+  .photo img {
+    width: 100%;
+    height: auto !important;
+    display: block;
+  }
+
+  #photo {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
 
 
   /* ===== STAMP ===== */
@@ -617,6 +661,49 @@
     transition: transform 0.4s;
   }
   .btn:hover .arrow { transform: translateX(4px); }
+
+/* ===== STAMP MODAL ===== */
+#stamp-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(250,248,242,0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s cubic-bezier(0.7,0,0.3,1);
+  z-index: 9999;
+}
+
+#stamp-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#stamp-modal-img {
+  max-width: 48vw;   /* ← 横幅を画面の約半分 */
+  max-height: 48vh;  /* ← 高さも半分程度 */
+  object-fit: contain;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  transform: scale(0.95);
+  transition:
+    transform 0.35s cubic-bezier(0.7,0,0.3,1),
+    opacity 0.35s;
+  opacity: 0;
+}
+
+#stamp-modal.active #stamp-modal-img {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.stamp-main-img,
+.stamp-thumb img {
+  cursor: zoom-in;
+}
+
+
 
   /* ===== ABOUT ===== */
   #about {
@@ -2202,51 +2289,63 @@
     <div class="photo-grid">
       <div class="photo photo-1 reveal">
         <img src="images/P001.JPG" alt="写真 001" loading="lazy">
-        <div class="photo-caption">001</div>
+        <div class="photo-caption">登山口</div>
       </div>
       <div class="photo photo-2 reveal">
         <img src="images/P002.jpg" alt="写真 002" loading="lazy">
-        <div class="photo-caption">002</div>
+        <div class="photo-caption">星空</div>
       </div>
       <div class="photo photo-3 reveal">
         <img src="images/P003.jpeg" alt="写真 003" loading="lazy">
-        <div class="photo-caption">003</div>
+        <div class="photo-caption">浄土ヶ浜</div>
       </div>
       <div class="photo photo-4 reveal">
         <img src="images/P004.JPG" alt="写真 004" loading="lazy">
-        <div class="photo-caption">004</div>
+        <div class="photo-caption">猫</div>
       </div>
       <div class="photo photo-5 reveal">
         <img src="images/P005.JPG" alt="写真 005" loading="lazy">
-        <div class="photo-caption">005</div>
+        <div class="photo-caption">日没</div>
       </div>
       <div class="photo photo-6 reveal">
         <img src="images/P006.JPG" alt="写真 006" loading="lazy">
-        <div class="photo-caption">006</div>
+        <div class="photo-caption">恐山</div>
       </div>
       <div class="photo photo-7 reveal">
         <img src="images/P007.JPEG" alt="写真 007" loading="lazy">
-        <div class="photo-caption">007</div>
+        <div class="photo-caption">たんぽぽ</div>
       </div>
       <div class="photo photo-8 reveal">
         <img src="images/P008.jpg" alt="写真 008" loading="lazy">
-        <div class="photo-caption">008</div>
+        <div class="photo-caption">鶯谷</div>
       </div>
       <div class="photo photo-9 reveal">
         <img src="images/P009.JPG" alt="写真 009" loading="lazy">
-        <div class="photo-caption">009</div>
+        <div class="photo-caption">淡路</div>
       </div>
       <div class="photo photo-10 reveal">
         <img src="images/P010.jpg" alt="写真 010" loading="lazy">
-        <div class="photo-caption">010</div>
+        <div class="photo-caption">月</div>
       </div>
       <div class="photo photo-11 reveal">
         <img src="images/P011.jpg" alt="写真 011" loading="lazy">
-        <div class="photo-caption">011</div>
+        <div class="photo-caption">猫</div>
       </div>
       <div class="photo photo-12 reveal">
         <img src="images/P012.JPG" alt="写真 012" loading="lazy">
-        <div class="photo-caption">012</div>
+        <div class="photo-caption">極楽浄土</div>
+      </div>
+      <div class="photo photo-13 reveal">
+        <img src="images/P013.jpg" alt="写真 013" loading="lazy">
+        <div class="photo-caption">こけし</div>
+      </div>
+      <div class="photo photo-14 reveal">
+        <img src="images/P014.jpg" alt="写真 014" loading="lazy">
+        <div class="photo-caption">黒猫</div>
+      </div>
+      <div class="photo photo-15 reveal">
+        <img src="images/P015.jpg" alt="写真 015" loading="lazy">
+        <div class="photo-caption">夜</div>
       </div>
     </div>
   </section>
@@ -2357,6 +2456,11 @@
     </div>
   </section>
 
+<!-- ===== STAMP MODAL ===== -->
+<div id="stamp-modal">
+  <img id="stamp-modal-img" src="" alt="">
+</div>
+
   <!-- ABOUT -->
   <section id="about">
     <h2 class="section-title reveal">
@@ -2453,176 +2557,210 @@
 
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-// ===== Tanka manual scroll =====
-  (function() {
-    const track = document.getElementById('tankaTrack');
-    const viewport = document.getElementById('tankaViewport');
-    const prevBtn = document.getElementById('tankaLeft');
-    const nextBtn = document.getElementById('tankaRight');
-    const playBtn = document.getElementById('tankaPlay');
-    const speedInput = document.getElementById('tankaSpeed');
-    const speedVal = document.querySelector('.tanka-speed-label');
-    if (!track) return;
+// ===== Tanka manual scroll (with inertia) =====
+(function() {
+  const track = document.getElementById('tankaTrack');
+  const viewport = document.getElementById('tankaViewport');
+  const prevBtn = document.getElementById('tankaLeft');
+  const nextBtn = document.getElementById('tankaRight');
+  const playBtn = document.getElementById('tankaPlay');
+  const speedInput = document.getElementById('tankaSpeed');
+  const speedVal = document.querySelector('.tanka-speed-label');
+  if (!track) return;
 
-    let position = 0;          // 現在のtranslateX値(px、負の方向)
-    let loopWidth = 0;         // 1セット分の幅
-    let baseSpeed = 50;        // 基準速度 (px/秒)
-    let speed = baseSpeed * (speedInput ? parseFloat(speedInput.value) : 0.5); 
-    let direction = -1;        // -1: 左へ流れる / +1: 右へ
-    let playing = true;
-    let lastTime = null;
+  let position = 0;        // translateX
+  let loopWidth = 0;
 
-    const stage = track.closest('.tanka-stage');
-    const LH = 1.6;
+  const baseSpeed = 50;    // px/sec
+  let speedMul = speedInput ? parseFloat(speedInput.value) : 0.5;
 
-    function countChars(item) {
-      return [...(item.textContent || '').trim()].length;
+  // ★ 慣性用
+  let targetSpeed = -baseSpeed * speedMul;
+  let currentSpeed = targetSpeed;
+  const accel = 6;        // 慣性の強さ（4〜10で調整）
+
+  let playing = true;
+  let lastTime = null;
+
+  const stage = track.closest('.tanka-stage');
+  const LH = 1.6;
+
+  function countChars(item) {
+    return [...(item.textContent || '').trim()].length;
+  }
+
+  function updateLayout() {
+    const items = track.children;
+    const half = Math.floor(items.length / 2) || items.length;
+    let max = 0;
+    for (let i = 0; i < half; i++) {
+      const c = countChars(items[i]);
+      if (c > max) max = c;
     }
+    const charsPerCol = Math.ceil(max / 2.2) + 1;
+    stage.style.setProperty('--tanka-chars', charsPerCol);
+    const targetH = Math.min(window.innerHeight * 0.72, 680) * 0.88;
+    const fs = Math.max(12, Math.min(targetH / (charsPerCol * LH), 36));
+    stage.style.setProperty('--tanka-fs', fs + 'px');
+  }
 
-    function updateLayout() {
-      const items = track.children;
-      const half = Math.floor(items.length / 2) || items.length;
-      let max = 0;
-      for (let i = 0; i < half; i++) {
-        const c = countChars(items[i]);
-        if (c > max) max = c;
-      }
-      const charsPerCol = Math.ceil(max / 2.2) + 1;
-      stage.style.setProperty('--tanka-chars', charsPerCol);
-      const targetH = Math.min(window.innerHeight * 0.72, 680) * 0.88;
-      const fs = Math.max(12, Math.min(targetH / (charsPerCol * LH), 36));
-      stage.style.setProperty('--tanka-fs', fs + 'px');
+  function measure() {
+    const items = track.children;
+    let w = 0;
+    const half = items.length / 2;
+    for (let i = 0; i < half; i++) {
+      const item = items[i];
+      const style = getComputedStyle(item);
+      w += item.offsetWidth + parseFloat(style.marginRight);
     }
+    loopWidth = w;
+  }
 
-    function measure() {
-      const items = track.children;
-      let w = 0;
-      const half = items.length / 2;
-      for (let i = 0; i < half; i++) {
-        const item = items[i];
-        const style = getComputedStyle(item);
-        w += item.offsetWidth + parseFloat(style.marginRight);
-      }
-      loopWidth = w;
+  function applyTransform() {
+    if (loopWidth > 0) {
+      if (position <= -loopWidth) position += loopWidth;
+      if (position > 0) position -= loopWidth;
     }
+    track.style.transform = `translateX(${position}px)`;
+  }
 
-    function applyTransform() {
-      // これが無限ループ（ワープ）の仕掛けです
-      if (loopWidth > 0) {
-        if (position <= -loopWidth) position += loopWidth;
-        if (position > 0) position -= loopWidth;
-      }
-      track.style.transform = `translateX(${position}px)`;
-    }
+  function tick(t) {
+    if (!lastTime) lastTime = t;
+    const dt = (t - lastTime) / 1000;
+    lastTime = t;
 
-    function tick(t) {
-      if (!lastTime) lastTime = t;
-      const dt = (t - lastTime) / 1000;
-      lastTime = t;
-      if (playing) {
-        position += direction * speed * dt;
-        applyTransform();
-      }
-      requestAnimationFrame(tick);
-    }
-
-    function nudge(dir) {
-      const sample = track.children[0];
-      if (!sample) return;
-      const style = getComputedStyle(sample);
-      const step = sample.offsetWidth + parseFloat(style.marginRight);
-      position += dir * step;
+    if (playing) {
+      // ★ 慣性：現在速度を目標速度に近づける
+      currentSpeed += (targetSpeed - currentSpeed) * accel * dt;
+      position += currentSpeed * dt;
       applyTransform();
     }
+    requestAnimationFrame(tick);
+  }
 
-    function setPlaying(p) {
-      playing = p;
-      if (playBtn) {
-        playBtn.textContent = p ? '❚❚' : '▶';
-        playBtn.classList.toggle('active', p);
-      }
-    }
-
-    // ボタンのクリックイベント（安全に動くよう存在チェックを追加）
-    if (nextBtn) {
-      nextBtn.addEventListener('click', () => {
-        direction = -1;
-        nudge(-1);
-      });
-    }
-    if (prevBtn) {
-      prevBtn.addEventListener('click', () => {
-        direction = +1;
-        nudge(+1);
-      });
-    }
+  function setPlaying(p) {
+    playing = p;
     if (playBtn) {
-      playBtn.addEventListener('click', () => setPlaying(!playing));
+      playBtn.textContent = p ? '❚❚' : '▶';
+      playBtn.classList.toggle('active', p);
     }
+  }
 
-    // スライダーを動かしたときの速度調整（バグを修正）
-    if (speedInput && speedVal) {
-      speedInput.addEventListener('input', (e) => {
-        const val = parseFloat(e.target.value);
-        speed = baseSpeed * val; // スライダーの値を「倍率」として計算
-        speedVal.textContent = 'Speed ×' + val.toFixed(1);
-      });
-    }
+  // ===== ボタン操作 =====
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      targetSpeed = -Math.abs(baseSpeed * speedMul);
+    });
+  }
 
-    // 初期化
-    setPlaying(true);
-    window.addEventListener('load', () => {
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      targetSpeed = Math.abs(baseSpeed * speedMul);
+    });
+  }
+
+  if (playBtn) {
+    playBtn.addEventListener('click', () => setPlaying(!playing));
+  }
+
+  // ===== スピード調整 =====
+  if (speedInput && speedVal) {
+    speedInput.addEventListener('input', (e) => {
+      speedMul = parseFloat(e.target.value);
+      const sign = Math.sign(targetSpeed) || -1;
+      targetSpeed = sign * baseSpeed * speedMul;
+      speedVal.textContent = 'Speed ×' + speedMul.toFixed(1);
+    });
+  }
+
+  // ===== 初期化 =====
+  setPlaying(true);
+  window.addEventListener('load', () => {
+    updateLayout();
+    measure();
+    position = -(Math.random() * loopWidth);
+    requestAnimationFrame(tick);
+  });
+
+  window.addEventListener('resize', () => {
+    updateLayout();
+    measure();
+  });
+
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => {
       updateLayout();
       measure();
-      position = -(Math.random() * loopWidth);
-      requestAnimationFrame(tick);
     });
-    window.addEventListener('resize', () => {
-      updateLayout();
-      measure();
+  }
+})();
+
+
+// ===== Lightbox =====
+(function() {
+  const lb = document.createElement('div');
+  lb.className = 'lightbox';
+  lb.innerHTML =
+    '<button class="lightbox-close" aria-label="閉じる">×</button>' +
+    '<img class="lightbox-img" src="" alt="">';
+  document.body.appendChild(lb);
+
+  const lbImg = lb.querySelector('.lightbox-img');
+  const lbClose = lb.querySelector('.lightbox-close');
+
+  function open(src, alt) {
+    lbImg.src = src;
+    lbImg.alt = alt || '';
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    lb.classList.remove('open');
+    document.body.style.overflow = '';
+    lbImg.src = '';
+  }
+
+  document.querySelectorAll('.photo').forEach(photo => {
+    photo.addEventListener('click', () => {
+      const img = photo.querySelector('img');
+      if (img) open(img.src, img.alt);
     });
-    if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => {
-        updateLayout();
-        measure();
-      });
-    }
-  })();
+  });
 
-  // ===== Lightbox =====
-  (function() {
-    const lb = document.createElement('div');
-    lb.className = 'lightbox';
-    lb.innerHTML = '<button class="lightbox-close" aria-label="閉じる">×</button><img class="lightbox-img" src="" alt="">';
-    document.body.appendChild(lb);
+  lbClose.addEventListener('click', (e) => {
+    e.stopPropagation();
+    close();
+  });
 
-    const lbImg = lb.querySelector('.lightbox-img');
-    const lbClose = lb.querySelector('.lightbox-close');
+  lb.addEventListener('click', (e) => {
+    if (e.target === lb) close();
+  });
 
-    function open(src, alt) {
-      lbImg.src = src;
-      lbImg.alt = alt || '';
-      lb.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') close();
+  });
+})();
 
-    function close() {
-      lb.classList.remove('open');
-      document.body.style.overflow = '';
-      lbImg.src = '';
-    }
 
-    document.querySelectorAll('.photo').forEach(photo => {
-      photo.addEventListener('click', () => {
-        const img = photo.querySelector('img');
-        if (img) open(img.src, img.alt);
-      });
+
+// ===== Stamp =====
+  const modal = document.getElementById('stamp-modal');
+  const modalImg = document.getElementById('stamp-modal-img');
+
+  document.querySelectorAll('.stamp-main-img, .stamp-thumb img').forEach(img => {
+    img.addEventListener('click', () => {
+      modalImg.src = img.src;
+      modal.classList.add('active');
     });
+  });
 
-    lbClose.addEventListener('click', (e) => { e.stopPropagation(); close(); });
-    lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
-  })();
+  modal.addEventListener('click', () => {
+    modal.classList.remove('active');
+    modalImg.src = '';
+  });
+
+
 </script>
 
 </body>

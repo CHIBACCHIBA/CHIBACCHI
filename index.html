@@ -686,7 +686,7 @@
   opacity: 1;
 }
 
-.stamp-main-img,
+
 .stamp-thumb img {
   cursor: zoom-in;
 }
@@ -2736,7 +2736,7 @@
   const modal = document.getElementById('stamp-modal');
   const modalImg = document.getElementById('stamp-modal-img');
 
-  document.querySelectorAll('.stamp-main-img, .stamp-thumb img').forEach(img => {
+  document.querySelectorAll('.stamp-thumb img').forEach(img => {
     img.addEventListener('click', () => {
       modalImg.src = img.src;
       modal.classList.add('active');

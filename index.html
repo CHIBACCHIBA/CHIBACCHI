@@ -383,7 +383,7 @@
   }
 }
 
-  /* ===== PHOTO ===== */
+/* ===== PHOTO ===== */
   #photo {
     background: var(--ink);
     color: var(--paper);
@@ -393,9 +393,10 @@
   #photo .section-num { color: var(--red); }
   #photo .section-title .jp { color: rgba(244,241,234,0.4); }
 
+  /* ─── PC（デスクトップ）用の基本設定 ─── */
   .photo-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, 1fr); /* PCは3列 */
     gap: 0.75rem;
     align-items: start;
   }
@@ -417,34 +418,18 @@
     display: block;
   }
 
-  /* 001・002 を2行スパンして縦長に */
-  .photo-1, .photo-2 {
+  /* PC用：特定の写真を2行分大きく見せる設定 */
+  .photo-1, .photo-2, .photo-10 {
     grid-row: span 2;
     align-self: stretch;
   }
 
-  .photo-1 img, .photo-2 img {
+  .photo-1 img, .photo-2 img, .photo-10 img {
     height: 100%;
     object-fit: cover;
   }
 
-
-/* 010 は2行スパンだが、列は自動配置に任せる */
-.photo-10 {
-  grid-row: span 2;
-  align-self: stretch;
-}
-
-.photo-10 img {
-  height: 100%;
-  object-fit: cover;
-}
-
-  .photo-10 img {
-    height: 100%;
-    object-fit: cover;
-  }
-
+  /* 写真のキャプション（文字）設定 */
   .photo-caption {
     position: absolute;
     bottom: 0;
@@ -463,56 +448,47 @@
   .photo:hover .photo-caption { opacity: 1; }
 
 
-/* ===== PHOTO / Mobile FINAL FIX ===== */
-@media (max-width: 768px) {
+  /* ─── スマホ用の設定（隙間をなくすBパターン） ─── */
+  @media (max-width: 768px) {
+    #photo {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
 
-  /* Gridを完全に無効化 */
-  .photo-grid {
-    display: block;
-    column-count: 2;
-    column-gap: 0.5rem;
+    /* Gridをやめて、新聞のように上から詰めるカラム設定に変更 */
+    .photo-grid {
+      display: block;
+      column-count: 2;     /* スマホは2列 */
+      column-gap: 0.5rem;  /* 列の間の隙間 */
+    }
+
+    .photo {
+      display: inline-block; /* 縦に隙間なく積むための重要設定 */
+      width: 100%;
+      margin-bottom: 0.5rem; /* 写真の上下の隙間 */
+      break-inside: avoid;   /* 写真が途中で切れるのを防ぐ */
+      transform: none;
+    }
+
+    /* PC用の「大きく見せる設定」をスマホでは完全無効化 */
+    .photo-1,
+    .photo-2,
+    .photo-10 {
+      grid-row: unset;
+      align-self: unset;
+    }
+
+    /* 全ての写真を元の比率のまま（切り取らずに）表示する */
+    .photo img,
+    .photo-1 img,
+    .photo-2 img,
+    .photo-10 img {
+      width: 100%;
+      height: auto !important;
+      object-fit: unset; /* PC用のcover設定を解除 */
+      display: block;
+    }
   }
-
-  .photo {
-    break-inside: avoid;
-    margin-bottom: 0.5rem;
-    transform: none;
-  }
-
-  /* PC用の指定を完全無効化 */
-  .photo,
-  .photo-1,
-  .photo-2,
-  .photo-10 {
-    grid-column: unset !important;
-    grid-row: unset !important;
-    align-self: unset !important;
-  }
-
-  .photo img {
-    width: 100%;
-    height: auto !important;
-    display: block;
-  }
-
-  #photo {
-    padding-top: 3rem;
-    padding-bottom: 3rem;
-  }
-}
-
-.photo-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* スマホでも見やすい自動配置 */
-  gap: 15px;
-}
-
-.photo img {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-
 
   /* ===== STAMP ===== */
   #stamp {

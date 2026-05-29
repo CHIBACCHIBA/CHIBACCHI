@@ -1457,7 +1457,7 @@
 
     if (!track.dataset.cloned) {
       track.dataset.cloned = '1';
-      // 右側に2セット追加（右方向スクロール用）
+      // 右側に2セット追加
       for (let s = 0; s < 2; s++) {
         for (const item of originals) {
           const clone = item.cloneNode(true);
@@ -1466,7 +1466,7 @@
           track.appendChild(clone);
         }
       }
-      // 左側に2セット追加（左方向スクロール用）
+      // 左側に2セット追加
       for (let s = 0; s < 2; s++) {
         for (const item of [...originals].reverse()) {
           const clone = item.cloneNode(true);
@@ -1475,16 +1475,14 @@
           track.prepend(clone);
         }
       }
-      // 左に2セット追加した分、初期positionをずらして見た目を維持
+      // 左に追加した分だけ初期positionをずらす
       position -= loopWidth * 2;
     }
   }
 
   function applyTransform() {
     if (loopWidth > 0) {
-      // 右方向に行きすぎたら1セット分左へ（左クローン2セット分の余裕 = -loopWidth*2 〜 -loopWidth*1）
-      while (position > -loopWidth) position -= loopWidth;
-      // 左方向に行きすぎたら1セット分右へ
+      while (position > -loopWidth)      position -= loopWidth;
       while (position <= -loopWidth * 3) position += loopWidth;
     }
     track.style.transform = `translateX(${position}px)`;
@@ -1495,14 +1493,12 @@
     const dt = Math.min((t - lastTime) / 1000, 0.05);
     lastTime = t;
 
-    // ドラッグ中はtickからは位置を触らない
     if (!dragActive) {
       if (playing) {
-        // 自動スクロール: 慣性で目標速度に近づける
         currentSpeed += (targetSpeed - currentSpeed) * accel * dt;
       } else {
-        // 停止中: 指を離した後の慣性を減衰
-        currentSpeed *= Math.pow(0.88, dt * 60);
+        // 停止中：慣性を自然減衰
+        currentSpeed *= Math.pow(0.85, dt * 60);
         if (Math.abs(currentSpeed) < 0.5) currentSpeed = 0;
       }
       position += currentSpeed * dt;
@@ -1567,70 +1563,48 @@
     });
   }
 
-  // ===== タッチ＆マウスドラッグ（無限スクロール統合）=====
+  // ===== タッチ＆マウスドラッグ（慣性スワイプ）=====
   let dragActive = false;
-  let dragLastX = 0;
-  let dragVelocity = 0;
-  let dragVelSmooth = 0;
+  let dragLastX  = 0;
+  let dragVelBuf = 0;   // 速度バッファ（平滑化用）
 
-  // タッチ
-  viewport.addEventListener('touchstart', e => {
+  function onDragStart(x) {
     dragActive = true;
-    dragLastX = e.touches[0].clientX;
-    dragVelocity = 0;
-    dragVelSmooth = 0;
-    // 自動スクロール速度をいったん止める（指を離したら戻す）
+    dragLastX  = x;
+    dragVelBuf = 0;
     currentSpeed = 0;
-  }, { passive: true });
+  }
 
-  viewport.addEventListener('touchmove', e => {
+  function onDragMove(x) {
     if (!dragActive) return;
-    const x = e.touches[0].clientX;
     const delta = x - dragLastX;
-    dragVelSmooth = dragVelSmooth * 0.6 + delta * 0.4; // 速度を平滑化
-    dragLastX = x;
-    position += delta;
+    dragLastX   = x;
+    // 平滑化：直近deltaを70%重みで保持
+    dragVelBuf  = dragVelBuf * 0.3 + delta * 0.7;
+    position   += delta;
     applyTransform();
-  }, { passive: true });
+  }
 
-  viewport.addEventListener('touchend', () => {
-    dragActive = false;
-    // 慣性：スワイプ速度をそのまま引き継いで減衰させる
-    currentSpeed = dragVelSmooth * 60;
-    // 1.5秒後に自動スクロール速度に戻す
-    if (playing) {
-      setTimeout(() => { currentSpeed = targetSpeed; }, 1500);
-    }
-  });
-
-  // マウスドラッグ（PC）
-  viewport.addEventListener('mousedown', e => {
-    dragActive = true;
-    dragLastX = e.clientX;
-    dragVelocity = 0;
-    dragVelSmooth = 0;
-    currentSpeed = 0;
-    viewport.style.cursor = 'grabbing';
-  });
-
-  window.addEventListener('mousemove', e => {
-    if (!dragActive) return;
-    const delta = e.clientX - dragLastX;
-    dragVelSmooth = dragVelSmooth * 0.6 + delta * 0.4;
-    dragLastX = e.clientX;
-    position += delta;
-    applyTransform();
-  });
-
-  window.addEventListener('mouseup', () => {
+  function onDragEnd() {
     if (!dragActive) return;
     dragActive = false;
-    viewport.style.cursor = '';
-    currentSpeed = dragVelSmooth * 60;
+    // 慣性：バッファ速度をpx/secに変換（×倍率で"サーッ"感を調整）
+    currentSpeed = dragVelBuf * 120;
     if (playing) {
-      setTimeout(() => { currentSpeed = targetSpeed; }, 1500);
+      // 2秒後に自動スクロール速度へ戻す
+      setTimeout(() => { currentSpeed = targetSpeed; }, 2000);
     }
-  });
+  }
+
+  // touch
+  viewport.addEventListener('touchstart', e => onDragStart(e.touches[0].clientX), { passive: true });
+  viewport.addEventListener('touchmove',  e => onDragMove(e.touches[0].clientX),  { passive: true });
+  viewport.addEventListener('touchend',   () => onDragEnd());
+
+  // mouse
+  viewport.addEventListener('mousedown',  e => { onDragStart(e.clientX); viewport.style.cursor = 'grabbing'; });
+  window .addEventListener('mousemove',   e => onDragMove(e.clientX));
+  window .addEventListener('mouseup',     () => { onDragEnd(); viewport.style.cursor = ''; });
 })();
 
 
@@ -1697,6 +1671,7 @@
     modal.classList.remove('active');
     modalImg.src = '';
   });
+
 
 </script>
 </body>

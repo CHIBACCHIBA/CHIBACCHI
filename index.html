@@ -1397,6 +1397,37 @@
 
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
+
+/* === swipe → transform 管理 === */
+
+const track = document.getElementById('tankaTrack');
+let currentX = 0;
+let startX = 0;
+let dragging = false;
+
+track.addEventListener('pointerdown', (e) => {
+  dragging = true;
+  startX = e.clientX;
+  track.setPointerCapture(e.pointerId);
+});
+
+track.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  const dx = e.clientX - startX;
+  startX = e.clientX;
+  currentX += dx;
+  track.style.transform = `translateX(${currentX}px)`;
+});
+
+track.addEventListener('pointerup', () => {
+  dragging = false;
+});
+
+track.addEventListener('pointercancel', () => {
+  dragging = false;
+});
+
+
 // ===== Tanka manual scroll (with inertia) =====
 (function() {
   const track = document.getElementById('tankaTrack');

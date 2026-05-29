@@ -212,7 +212,6 @@
   height: 100%;
   overflow: hidden;
   touch-action: pan-y;
-  scroll-padding-inline: 2rem;
 
   /* edge fade */
   -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
@@ -1398,35 +1397,6 @@
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
 
-/* === swipe → transform 管理 === */
-
-const track = document.getElementById('tankaTrack');
-let currentX = 0;
-let startX = 0;
-let dragging = false;
-
-track.addEventListener('pointerdown', (e) => {
-  dragging = true;
-  startX = e.clientX;
-  track.setPointerCapture(e.pointerId);
-});
-
-track.addEventListener('pointermove', (e) => {
-  if (!dragging) return;
-  const dx = e.clientX - startX;
-  startX = e.clientX;
-  currentX += dx;
-  track.style.transform = `translateX(${currentX}px)`;
-});
-
-track.addEventListener('pointerup', () => {
-  dragging = false;
-});
-
-track.addEventListener('pointercancel', () => {
-  dragging = false;
-});
-
 
 // ===== Tanka manual scroll (with inertia) =====
 (function() {
@@ -1477,7 +1447,6 @@ track.addEventListener('pointercancel', () => {
   }
 
   function measure() {
-    // オリジナル（クローンでない）アイテムだけで1セット幅を計測
     const originals = [...track.querySelectorAll('.tanka-item:not([data-clone])')];
     let w = 0;
     for (const item of originals) {
@@ -1486,36 +1455,56 @@ track.addEventListener('pointercancel', () => {
     }
     loopWidth = w;
 
-    // 初回のみ: JSでクローンを2セット追加して無限に見せる
     if (!track.dataset.cloned) {
       track.dataset.cloned = '1';
+      // 右側に2セット追加（右方向スクロール用）
       for (let s = 0; s < 2; s++) {
         for (const item of originals) {
           const clone = item.cloneNode(true);
-          clone.setAttribute('data-clone', '1');
+          clone.setAttribute('data-clone', 'r');
           clone.setAttribute('aria-hidden', 'true');
           track.appendChild(clone);
         }
       }
+      // 左側に2セット追加（左方向スクロール用）
+      for (let s = 0; s < 2; s++) {
+        for (const item of [...originals].reverse()) {
+          const clone = item.cloneNode(true);
+          clone.setAttribute('data-clone', 'l');
+          clone.setAttribute('aria-hidden', 'true');
+          track.prepend(clone);
+        }
+      }
+      // 左に2セット追加した分、初期positionをずらして見た目を維持
+      position -= loopWidth * 2;
     }
   }
 
   function applyTransform() {
     if (loopWidth > 0) {
-      if (position <= -loopWidth) position += loopWidth;
-      if (position > 0) position -= loopWidth;
+      // 右方向に行きすぎたら1セット分左へ（左クローン2セット分の余裕 = -loopWidth*2 〜 -loopWidth*1）
+      while (position > -loopWidth) position -= loopWidth;
+      // 左方向に行きすぎたら1セット分右へ
+      while (position <= -loopWidth * 3) position += loopWidth;
     }
     track.style.transform = `translateX(${position}px)`;
   }
 
   function tick(t) {
     if (!lastTime) lastTime = t;
-    const dt = (t - lastTime) / 1000;
+    const dt = Math.min((t - lastTime) / 1000, 0.05);
     lastTime = t;
 
-    if (playing) {
-      // ★ 慣性：現在速度を目標速度に近づける
-      currentSpeed += (targetSpeed - currentSpeed) * accel * dt;
+    // ドラッグ中はtickからは位置を触らない
+    if (!dragActive) {
+      if (playing) {
+        // 自動スクロール: 慣性で目標速度に近づける
+        currentSpeed += (targetSpeed - currentSpeed) * accel * dt;
+      } else {
+        // 停止中: 指を離した後の慣性を減衰
+        currentSpeed *= Math.pow(0.88, dt * 60);
+        if (Math.abs(currentSpeed) < 0.5) currentSpeed = 0;
+      }
       position += currentSpeed * dt;
       applyTransform();
     }
@@ -1577,6 +1566,71 @@ track.addEventListener('pointercancel', () => {
       measure();
     });
   }
+
+  // ===== タッチ＆マウスドラッグ（無限スクロール統合）=====
+  let dragActive = false;
+  let dragLastX = 0;
+  let dragVelocity = 0;
+  let dragVelSmooth = 0;
+
+  // タッチ
+  viewport.addEventListener('touchstart', e => {
+    dragActive = true;
+    dragLastX = e.touches[0].clientX;
+    dragVelocity = 0;
+    dragVelSmooth = 0;
+    // 自動スクロール速度をいったん止める（指を離したら戻す）
+    currentSpeed = 0;
+  }, { passive: true });
+
+  viewport.addEventListener('touchmove', e => {
+    if (!dragActive) return;
+    const x = e.touches[0].clientX;
+    const delta = x - dragLastX;
+    dragVelSmooth = dragVelSmooth * 0.6 + delta * 0.4; // 速度を平滑化
+    dragLastX = x;
+    position += delta;
+    applyTransform();
+  }, { passive: true });
+
+  viewport.addEventListener('touchend', () => {
+    dragActive = false;
+    // 慣性：スワイプ速度をそのまま引き継いで減衰させる
+    currentSpeed = dragVelSmooth * 60;
+    // 1.5秒後に自動スクロール速度に戻す
+    if (playing) {
+      setTimeout(() => { currentSpeed = targetSpeed; }, 1500);
+    }
+  });
+
+  // マウスドラッグ（PC）
+  viewport.addEventListener('mousedown', e => {
+    dragActive = true;
+    dragLastX = e.clientX;
+    dragVelocity = 0;
+    dragVelSmooth = 0;
+    currentSpeed = 0;
+    viewport.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', e => {
+    if (!dragActive) return;
+    const delta = e.clientX - dragLastX;
+    dragVelSmooth = dragVelSmooth * 0.6 + delta * 0.4;
+    dragLastX = e.clientX;
+    position += delta;
+    applyTransform();
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!dragActive) return;
+    dragActive = false;
+    viewport.style.cursor = '';
+    currentSpeed = dragVelSmooth * 60;
+    if (playing) {
+      setTimeout(() => { currentSpeed = targetSpeed; }, 1500);
+    }
+  });
 })();
 
 
@@ -1644,63 +1698,6 @@ track.addEventListener('pointercancel', () => {
     modalImg.src = '';
   });
 
-
-(() => {
-  const viewport = document.getElementById("tankaViewport");
-  const track = document.getElementById("tankaTrack");
-
-  let currentX = 0;
-  let startX = 0;
-  let lastX = 0;
-  let dragging = false;
-
-  function update() {
-    track.style.transform = `translate3d(${currentX}px, 0, 0)`;
-  }
-
-  /* ===== touch ===== */
-  viewport.addEventListener("touchstart", e => {
-    dragging = true;
-    startX = e.touches[0].clientX;
-    lastX = startX;
-  }, { passive: true });
-
-  viewport.addEventListener("touchmove", e => {
-    if (!dragging) return;
-
-    const x = e.touches[0].clientX;
-    const delta = x - lastX;
-    lastX = x;
-
-    currentX += delta;
-    update();
-  }, { passive: true });
-
-  viewport.addEventListener("touchend", () => {
-    dragging = false;
-  });
-
-  /* ===== mouse (PC対応・副作用なし) ===== */
-  viewport.addEventListener("mousedown", e => {
-    dragging = true;
-    startX = e.clientX;
-    lastX = startX;
-    viewport.classList.add("dragging");
-  });
-
-  window.addEventListener("mousemove", e => {
-    if (!dragging) return;
-    const delta = e.clientX - lastX;
-    lastX = e.clientX;
-    currentX += delta;
-    update();
-  });
-
-  window.addEventListener("mouseup", () => {
-    dragging = false;
-    viewport.classList.remove("dragging");
-  });
-})();
 </script>
 </body>
 </html>
